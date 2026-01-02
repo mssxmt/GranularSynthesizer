@@ -14,7 +14,12 @@ namespace GranularSynthesizerExtensionParameterAddress {
 #endif
 
 typedef NS_ENUM(AUParameterAddress, GranularSynthesizerExtensionParameterAddress) {
-    gain = 0
+    gain = 0,
+    grainSize,
+    grainFrequency,
+    position,
+    pitch,
+    randomness
 };
 
 #ifdef __cplusplus
