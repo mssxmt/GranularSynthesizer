@@ -174,6 +174,15 @@ public:
         }
     }
 
+    // MARK: - Waveform Data Access
+    const std::vector<float>& getWaveformData() const {
+        return mGranularEngine.getAudioBuffer();
+    }
+
+    int getWaveformSize() const {
+        return mGranularEngine.getBufferSize();
+    }
+
     // MARK: - Member Variables
     AUHostMusicalContextBlock mMusicalContextBlock;
 

@@ -184,7 +184,24 @@
         
         return noErr;
     };
-    
+
+}
+
+#pragma mark - Waveform Data Access
+
+- (NSArray<NSNumber *> *)getWaveformData {
+    const std::vector<float>& waveform = _kernel.getWaveformData();
+    NSMutableArray<NSNumber *> *result = [NSMutableArray arrayWithCapacity:waveform.size()];
+
+    for (const float& sample : waveform) {
+        [result addObject:@(sample)];
+    }
+
+    return [result copy];
+}
+
+- (int)getWaveformSize {
+    return _kernel.getWaveformSize();
 }
 
 @end

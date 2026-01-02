@@ -98,11 +98,11 @@ public class AudioUnitViewController: AUViewController, AUAudioUnitFactory {
             host.removeFromParent()
             host.view.removeFromSuperview()
         }
-        
+
         guard let observableParameterTree = audioUnit.observableParameterTree else {
             return
         }
-        let content = GranularSynthesizerExtensionMainView(parameterTree: observableParameterTree)
+        let content = GranularSynthesizerExtensionMainView(parameterTree: observableParameterTree, audioUnit: audioUnit)
         let host = HostingController(rootView: content)
         self.addChild(host)
         host.view.frame = self.view.bounds

@@ -80,6 +80,15 @@ public:
         return std::tanh(output);
     }
 
+    // MARK: - Waveform Data Access
+    const std::vector<float>& getAudioBuffer() const {
+        return mAudioBuffer;
+    }
+
+    int getBufferSize() const {
+        return static_cast<int>(mAudioBuffer.size());
+    }
+
 private:
     double mLastGrainTime = 0.0;
 

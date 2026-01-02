@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		092EAEC32F07E01000DD4ABB /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEC22F07E01000DD4ABB /* WaveformView.swift */; };
 		097656D42F07BB4700A99514 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D32F07BB4700A99514 /* ContentView.swift */; };
 		097656D82F07BB4700A99514 /* ViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */; };
 		097656DB2F07BB4700A99514 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = 097656DA2F07BB4700A99514 /* Synth.aif */; };
@@ -77,6 +78,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		092EAEC22F07E01000DD4ABB /* WaveformView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GranularEngine.hpp; sourceTree = "<group>"; };
+		092EAEC52F07E05C00DD4ABB /* Grain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grain.hpp; sourceTree = "<group>"; };
 		097656D02F07BB4700A99514 /* GranularSynthesizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GranularSynthesizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		097656D32F07BB4700A99514 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerRepresentable.swift; sourceTree = "<group>"; };
@@ -338,6 +342,8 @@
 			children = (
 				0976572A2F07BB4800A99514 /* SinOscillator.h */,
 				0976572B2F07BB4800A99514 /* GranularSynthesizerExtensionDSPKernel.hpp */,
+				092EAEC52F07E05C00DD4ABB /* Grain.hpp */,
+				092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */,
 			);
 			path = DSP;
 			sourceTree = "<group>";
@@ -347,6 +353,7 @@
 			children = (
 				0976572E2F07BB4800A99514 /* GranularSynthesizerExtensionMainView.swift */,
 				097657302F07BB4800A99514 /* ParameterSlider.swift */,
+				092EAEC22F07E01000DD4ABB /* WaveformView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -574,6 +581,7 @@
 				0976571D2F07BB4800A99514 /* String+Utils.swift in Sources */,
 				0976573A2F07BB4800A99514 /* AudioUnitViewController.swift in Sources */,
 				097657312F07BB4800A99514 /* ParameterSlider.swift in Sources */,
+				092EAEC32F07E01000DD4ABB /* WaveformView.swift in Sources */,
 				0976572F2F07BB4800A99514 /* GranularSynthesizerExtensionMainView.swift in Sources */,
 				097657212F07BB4800A99514 /* GranularSynthesizerExtensionAudioUnit.mm in Sources */,
 			);

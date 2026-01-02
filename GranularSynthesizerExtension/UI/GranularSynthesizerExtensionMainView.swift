@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import AudioToolbox
 
 struct GranularSynthesizerExtensionMainView: View {
     var parameterTree: ObservableAUParameterGroup
+    var audioUnit: AUAudioUnit?
 
     var body: some View {
         ScrollView {
@@ -17,6 +19,22 @@ struct GranularSynthesizerExtensionMainView: View {
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.bottom)
+
+                // Waveform Display with Position Control
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Waveform")
+                        .font(.headline)
+                    WaveformView(
+                        audioUnit: audioUnit,
+                        position: Binding(
+                            get: { parameterTree.global.position.value },
+                            set: { parameterTree.global.position.value = $0 }
+                        )
+                    )
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
 
                 // Master
                 VStack(alignment: .leading, spacing: 8) {
