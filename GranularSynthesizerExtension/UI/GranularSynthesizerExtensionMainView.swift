@@ -20,21 +20,23 @@ struct GranularSynthesizerExtensionMainView: View {
                     .fontWeight(.bold)
                     .padding(.bottom)
 
-                // Waveform Display with Position Control
+                // Preset Management
+                PresetControlsView(audioUnit: audioUnit)
+                    .padding()
+
+                // Waveform Display with Grain Regions
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Waveform")
+                    Text("Grain Regions")
                         .font(.headline)
-                    WaveformView(
-                        audioUnit: audioUnit,
-                        position: Binding(
-                            get: { parameterTree.global.position.value },
-                            set: { parameterTree.global.position.value = $0 }
-                        )
-                    )
+                    WaveformView(audioUnit: audioUnit)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
+
+                // Waveform Management
+                WaveformManagerView(audioUnit: audioUnit)
+                    .padding()
 
                 // Master
                 VStack(alignment: .leading, spacing: 8) {
@@ -46,28 +48,9 @@ struct GranularSynthesizerExtensionMainView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
 
-                // Grain Parameters
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Grain")
-                        .font(.headline)
-                    ParameterSlider(param: parameterTree.global.grainSize)
-                    ParameterSlider(param: parameterTree.global.grainFrequency)
-                    ParameterSlider(param: parameterTree.global.position)
-                }
-                .padding()
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(10)
-
-                // Modulation
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Modulation")
-                        .font(.headline)
-                    ParameterSlider(param: parameterTree.global.pitch)
-                    ParameterSlider(param: parameterTree.global.randomness)
-                }
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(10)
+                // Envelope Modulation
+                EnvelopeControlsView(audioUnit: audioUnit)
+                    .padding()
             }
             .padding()
         }

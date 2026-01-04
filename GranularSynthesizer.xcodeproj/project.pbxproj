@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		092EAEC32F07E01000DD4ABB /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEC22F07E01000DD4ABB /* WaveformView.swift */; };
+		092EAEF02F07E80000DD4ABB /* LFOControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF12F07E80000DD4ABB /* LFOControlsView.swift */; };
+		092EAEF22F07E81000DD4ABB /* EnvelopeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF32F07E81000DD4ABB /* EnvelopeControlsView.swift */; };
+		092EAEF42F07E82000DD4ABB /* PresetControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */; };
+		092EAEF62F07E83000DD4ABB /* Preset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF72F07E83000DD4ABB /* Preset.swift */; };
+		092EAEF82F07E85000DD4ABB /* WaveformManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */; };
 		097656D42F07BB4700A99514 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D32F07BB4700A99514 /* ContentView.swift */; };
 		097656D82F07BB4700A99514 /* ViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */; };
 		097656DB2F07BB4700A99514 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = 097656DA2F07BB4700A99514 /* Synth.aif */; };
@@ -79,6 +84,11 @@
 
 /* Begin PBXFileReference section */
 		092EAEC22F07E01000DD4ABB /* WaveformView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		092EAEF12F07E80000DD4ABB /* LFOControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LFOControlsView.swift; sourceTree = "<group>"; };
+		092EAEF32F07E81000DD4ABB /* EnvelopeControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvelopeControlsView.swift; sourceTree = "<group>"; };
+		092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetControlsView.swift; sourceTree = "<group>"; };
+		092EAEF72F07E83000DD4ABB /* Preset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preset.swift; sourceTree = "<group>"; };
+		092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformManagerView.swift; sourceTree = "<group>"; };
 		092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GranularEngine.hpp; sourceTree = "<group>"; };
 		092EAEC52F07E05C00DD4ABB /* Grain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grain.hpp; sourceTree = "<group>"; };
 		097656D02F07BB4700A99514 /* GranularSynthesizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GranularSynthesizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -289,6 +299,7 @@
 				097657192F07BB4800A99514 /* Utility */,
 				0976571E2F07BB4800A99514 /* Audio Unit */,
 				097657222F07BB4800A99514 /* DSP */,
+				092EAEF82F07E84000DD4ABB /* Presets */,
 				097657322F07BB4800A99514 /* UI */,
 			);
 			path = Common;
@@ -328,6 +339,14 @@
 			path = DSP;
 			sourceTree = "<group>";
 		};
+		092EAEF82F07E84000DD4ABB /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+				092EAEF72F07E83000DD4ABB /* Preset.swift */,
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
 		097657252F07BB4800A99514 /* Parameters */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,8 +371,12 @@
 			isa = PBXGroup;
 			children = (
 				0976572E2F07BB4800A99514 /* GranularSynthesizerExtensionMainView.swift */,
-				097657302F07BB4800A99514 /* ParameterSlider.swift */,
 				092EAEC22F07E01000DD4ABB /* WaveformView.swift */,
+				092EAEF12F07E80000DD4ABB /* LFOControlsView.swift */,
+				092EAEF32F07E81000DD4ABB /* EnvelopeControlsView.swift */,
+				092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */,
+				092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */,
+				097657302F07BB4800A99514 /* ParameterSlider.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -582,6 +605,11 @@
 				0976573A2F07BB4800A99514 /* AudioUnitViewController.swift in Sources */,
 				097657312F07BB4800A99514 /* ParameterSlider.swift in Sources */,
 				092EAEC32F07E01000DD4ABB /* WaveformView.swift in Sources */,
+				092EAEF02F07E80000DD4ABB /* LFOControlsView.swift in Sources */,
+				092EAEF22F07E81000DD4ABB /* EnvelopeControlsView.swift in Sources */,
+				092EAEF42F07E82000DD4ABB /* PresetControlsView.swift in Sources */,
+				092EAEF62F07E83000DD4ABB /* Preset.swift in Sources */,
+				092EAEF82F07E85000DD4ABB /* WaveformManagerView.swift in Sources */,
 				0976572F2F07BB4800A99514 /* GranularSynthesizerExtensionMainView.swift in Sources */,
 				097657212F07BB4800A99514 /* GranularSynthesizerExtensionAudioUnit.mm in Sources */,
 			);

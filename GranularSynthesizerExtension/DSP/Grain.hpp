@@ -13,7 +13,7 @@
 
 class Grain {
 public:
-    Grain() : active(false), position(0.0), age(0.0) {}
+    Grain() : active(false), position(0.0), age(0.0), gain(1.0f), volumeScale(1.0f) {}
 
     void init(int startPos, float dur, float pitchRatio, const std::vector<float>& audioBuffer) {
         startPosition = startPos;
@@ -23,6 +23,7 @@ public:
         position = 0.0;
         age = 0.0;
         active = true;
+        volumeScale = 1.0f;  // Reset volume scale
 
         // Apply envelope (Hanning window)
         size_t numSamples = static_cast<size_t>(dur * 44100.0);
@@ -31,6 +32,14 @@ public:
             float phase = static_cast<float>(i) / static_cast<float>(numSamples - 1);
             envelope[i] = 0.5f * (1.0f - std::cos(phase * 2.0f * M_PI));
         }
+    }
+
+    void setGain(float g) {
+        gain = std::clamp(g, 0.0f, 1.0f);
+    }
+
+    void setVolumeScale(float scale) {
+        volumeScale = std::clamp(scale, 0.0f, 1.0f);
     }
 
     float process(double sampleRate) {
@@ -60,7 +69,7 @@ public:
         position += 1.0;
         age += 1.0 / sampleRate;
 
-        return sample * envValue;
+        return sample * envValue * gain * volumeScale;
     }
 
     bool isActive() const { return active; }
@@ -72,6 +81,8 @@ private:
     float playbackSpeed;
     double position;
     double age;
+    float gain;
+    float volumeScale;  // Additional volume scaling from voice envelope at creation time
 
     std::vector<float> buffer;
     std::vector<float> envelope;

@@ -5,13 +5,15 @@
 //  Created by MasashiXimoto on 2026/01/02.
 //
 
-#import "GranularSynthesizerExtensionAudioUnit.h"
-
+// Import AudioKit frameworks first
 #import <AVFoundation/AVFoundation.h>
-#import <CoreAudioKit/AUViewController.h>
+#import <CoreAudioKit/CoreAudioKit.h>
 
+// Import C++ headers to avoid enum conflicts
 #import "GranularSynthesizerExtensionAUProcessHelper.hpp"
 #import "GranularSynthesizerExtensionDSPKernel.hpp"
+
+#import "GranularSynthesizerExtensionAudioUnit.h"
 
 
 // Define parameter addresses.
@@ -202,6 +204,312 @@
 
 - (int)getWaveformSize {
     return _kernel.getWaveformSize();
+}
+
+#pragma mark - Grain Region Management
+
+- (int)getGrainRegionCount {
+    return _kernel.getGrainRegionCount();
+}
+
+- (GrainRegionData *)getGrainRegion:(int)index {
+    const GrainRegion& region = _kernel.getGrainRegion(index);
+    GrainRegionData* data = [[GrainRegionData alloc] initWithStartPosition:region.startPosition
+                                                          endPosition:region.endPosition
+                                                           pitchShift:region.pitchShift
+                                                                 gain:region.gain
+                                                               active:region.active
+                                                               jitter:region.jitter
+                                                   playbackDirection:(NSInteger)region.playbackDirection
+                                                       playbackSpeed:region.playbackSpeed];
+    // LFO properties
+    data.lfoEnabled = region.lfoEnabled;
+    data.lfoWaveform = (NSInteger)region.lfoWaveform;
+    data.lfoFrequency = region.lfoFrequency;
+    data.lfoDepth = region.lfoDepth;
+    data.lfoTarget = (NSInteger)region.lfoTarget;
+    // Manual values
+    data.manualPosition = region.manualPosition;
+    data.manualWidth = region.manualWidth;
+    return data;
+}
+
+- (void)setGrainRegion:(int)index region:(GrainRegionData *)region {
+    if (!region) return;
+
+    GrainRegion cppRegion;
+    cppRegion.startPosition = region.startPosition;
+    cppRegion.endPosition = region.endPosition;
+    cppRegion.pitchShift = region.pitchShift;
+    cppRegion.gain = region.gain;
+    cppRegion.active = region.active;
+    cppRegion.jitter = region.jitter;
+    cppRegion.playbackDirection = (PlaybackDirection)region.playbackDirection;
+    cppRegion.playbackSpeed = region.playbackSpeed;
+
+    // LFO properties
+    cppRegion.lfoEnabled = region.lfoEnabled;
+    cppRegion.lfoWaveform = (int)region.lfoWaveform;
+    cppRegion.lfoFrequency = region.lfoFrequency;
+    cppRegion.lfoDepth = region.lfoDepth;
+    cppRegion.lfoTarget = (int)region.lfoTarget;
+    // Manual values
+    cppRegion.manualPosition = region.manualPosition;
+    cppRegion.manualWidth = region.manualWidth;
+
+    _kernel.setGrainRegion(index, cppRegion);
+}
+
+- (void)setRegionPlaybackDirection:(int)index direction:(NSInteger)direction {
+    _kernel.setRegionPlaybackDirection(index, (PlaybackDirection)direction);
+}
+
+- (void)setRegionJitter:(int)index jitter:(float)jitter {
+    _kernel.setRegionJitter(index, jitter);
+}
+
+- (void)setRegionPlaybackSpeed:(int)index speed:(float)speed {
+    _kernel.setRegionPlaybackSpeed(index, speed);
+}
+
+- (float)getRegionPlaybackSpeed:(int)index {
+    return _kernel.getRegionPlaybackSpeed(index);
+}
+
+- (float)getRegionPlaybackPosition:(int)index {
+    return _kernel.getRegionPlaybackPosition(index);
+}
+
+- (void)addGrainRegion {
+    _kernel.addGrainRegion();
+}
+
+- (void)removeGrainRegion:(int)index {
+    _kernel.removeGrainRegion(index);
+}
+
+#pragma mark - LFO Control
+
+- (void)setLFOFrequency:(float)freq {
+    _kernel.setLFOFrequency(freq);
+}
+
+- (void)setLFOWaveform:(int)waveform {
+    _kernel.setLFOWaveform(waveform);
+}
+
+- (void)setLFOModulationEnabled:(BOOL)enabled {
+    _kernel.setLFOModulationEnabled(enabled);
+}
+
+- (void)setLFOTarget:(int)target {
+    _kernel.setLFOTarget(target);
+}
+
+- (void)setLFODepth:(float)depth {
+    _kernel.setLFODepth(depth);
+}
+
+- (BOOL)getLFOModulationEnabled {
+    return _kernel.getLFOModulationEnabled();
+}
+
+- (int)getLFOTarget {
+    return _kernel.getLFOTarget();
+}
+
+- (float)getLFODepth {
+    return _kernel.getLFODepth();
+}
+
+#pragma mark - Region LFO Control
+
+- (void)setRegionLFOEnabled:(int)index enabled:(BOOL)enabled {
+    _kernel.setRegionLFOEnabled(index, enabled);
+}
+
+- (void)setRegionLFOWaveform:(int)index waveform:(NSInteger)waveform {
+    _kernel.setRegionLFOWaveform(index, (int)waveform);
+}
+
+- (void)setRegionLFOFrequency:(int)index frequency:(float)freq {
+    _kernel.setRegionLFOFrequency(index, freq);
+}
+
+- (void)setRegionLFODepth:(int)index depth:(float)depth {
+    _kernel.setRegionLFODepth(index, depth);
+}
+
+- (void)setRegionLFOTarget:(int)index target:(NSInteger)target {
+    _kernel.setRegionLFOTarget(index, (int)target);
+}
+
+- (BOOL)getRegionLFOEnabled:(int)index {
+    return _kernel.getRegionLFOEnabled(index);
+}
+
+- (NSInteger)getRegionLFOWaveform:(int)index {
+    return (NSInteger)_kernel.getRegionLFOWaveform(index);
+}
+
+- (float)getRegionLFOFrequency:(int)index {
+    return _kernel.getRegionLFOFrequency(index);
+}
+
+- (float)getRegionLFODepth:(int)index {
+    return _kernel.getRegionLFODepth(index);
+}
+
+- (NSInteger)getRegionLFOTarget:(int)index {
+    return (NSInteger)_kernel.getRegionLFOTarget(index);
+}
+
+#pragma mark - Manual Position/Width Control
+
+- (void)setRegionManualPosition:(int)index position:(float)position {
+    _kernel.setRegionManualPosition(index, position);
+}
+
+- (void)setRegionManualWidth:(int)index width:(float)width {
+    _kernel.setRegionManualWidth(index, width);
+}
+
+- (float)getRegionManualPosition:(int)index {
+    return _kernel.getRegionManualPosition(index);
+}
+
+- (float)getRegionManualWidth:(int)index {
+    return _kernel.getRegionManualWidth(index);
+}
+
+#pragma mark - Voice ADSR Envelope Control
+
+- (void)setEnvelopeAttack:(float)attack {
+    _kernel.setEnvelopeAttack(attack);
+}
+
+- (void)setEnvelopeDecay:(float)decay {
+    _kernel.setEnvelopeDecay(decay);
+}
+
+- (void)setEnvelopeSustain:(float)sustain {
+    _kernel.setEnvelopeSustain(sustain);
+}
+
+- (void)setEnvelopeRelease:(float)release {
+    _kernel.setEnvelopeRelease(release);
+}
+
+- (float)getEnvelopeAttack {
+    return _kernel.getEnvelopeAttack();
+}
+
+- (float)getEnvelopeDecay {
+    return _kernel.getEnvelopeDecay();
+}
+
+- (float)getEnvelopeSustain {
+    return _kernel.getEnvelopeSustain();
+}
+
+- (float)getEnvelopeRelease {
+    return _kernel.getEnvelopeRelease();
+}
+
+#pragma mark - Waveform Management
+
+- (int)getWaveformCount {
+    return _kernel.getWaveformCount();
+}
+
+- (NSString *)getWaveformName:(int)index {
+    std::string name = _kernel.getWaveformName(index);
+    return [NSString stringWithUTF8String:name.c_str()];
+}
+
+- (int)getCurrentWaveformIndex {
+    return _kernel.getCurrentWaveformIndex();
+}
+
+- (void)setCurrentWaveform:(int)index {
+    _kernel.setCurrentWaveform(index);
+}
+
+- (BOOL)loadWaveform:(NSString *)name data:(const float *)data sampleCount:(int)sampleCount {
+    std::string nameStr = [name UTF8String];
+    return _kernel.loadWaveform(nameStr, data, sampleCount);
+}
+
+- (BOOL)removeWaveform:(int)index {
+    return _kernel.removeWaveform(index);
+}
+
+#pragma mark - MIDI Note Control
+
+- (void)noteOn:(int)noteNumber velocity:(float)velocity {
+    _kernel.noteOn(noteNumber, velocity);
+}
+
+- (void)noteOff:(int)noteNumber {
+    _kernel.noteOff(noteNumber);
+}
+
+- (void)allNotesOff {
+    _kernel.allNotesOff();
+}
+
+- (int)getActiveVoiceCount {
+    return _kernel.getActiveVoiceCount();
+}
+
+#pragma mark - Region LFO Modulation Values (for UI animation)
+
+- (float)getRegionLFOPositionMod:(int)index {
+    return _kernel.getRegionLFOPositionMod(index);
+}
+
+- (float)getRegionLFOWidthMod:(int)index {
+    return _kernel.getRegionLFOWidthMod(index);
+}
+
+@end
+
+// MARK: - GrainRegionData Implementation
+
+@implementation GrainRegionData
+
+- (instancetype)initWithStartPosition:(float)startPosition
+                           endPosition:(float)endPosition
+                            pitchShift:(float)pitchShift
+                                  gain:(float)gain
+                                active:(BOOL)active
+                                jitter:(float)jitter
+                    playbackDirection:(NSInteger)playbackDirection
+                        playbackSpeed:(float)playbackSpeed {
+    self = [super init];
+    if (self) {
+        _startPosition = startPosition;
+        _endPosition = endPosition;
+        _pitchShift = pitchShift;
+        _gain = gain;
+        _active = active;
+        _jitter = jitter;
+        _playbackDirection = playbackDirection;
+        _playbackSpeed = playbackSpeed;
+        _currentPosition = startPosition;  // Initialize current position
+
+        // LFO properties (defaults)
+        _lfoEnabled = NO;
+        _lfoWaveform = 0;          // sine
+        _lfoFrequency = 1.0f;
+        _lfoDepth = 0.5f;
+        _lfoTarget = 0;            // off
+
+        // Manual values (defaults)
+        _manualPosition = startPosition;
+        _manualWidth = endPosition - startPosition;
+    }
+    return self;
 }
 
 @end

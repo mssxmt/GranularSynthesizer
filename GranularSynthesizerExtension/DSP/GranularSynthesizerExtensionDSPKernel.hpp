@@ -46,21 +46,14 @@ public:
             case GranularSynthesizerExtensionParameterAddress::gain:
                 mGain = value;
                 break;
-            case GranularSynthesizerExtensionParameterAddress::grainSize:
-                mGranularEngine.setGrainSize(value);
-                break;
-            case GranularSynthesizerExtensionParameterAddress::grainFrequency:
-                mGranularEngine.setGrainFrequency(value);
-                break;
-            case GranularSynthesizerExtensionParameterAddress::position:
-                mGranularEngine.setPosition(value);
-                break;
-            case GranularSynthesizerExtensionParameterAddress::pitch:
-                mGranularEngine.setPitch(value);
-                break;
-            case GranularSynthesizerExtensionParameterAddress::randomness:
-                mGranularEngine.setRandomness(value);
-                break;
+            // Global grain parameters removed - now handled per region
+            // case GranularSynthesizerExtensionParameterAddress::grainSize:
+            // case GranularSynthesizerExtensionParameterAddress::grainFrequency:
+            // case GranularSynthesizerExtensionParameterAddress::position:
+            // case GranularSynthesizerExtensionParameterAddress::pitch:
+            // case GranularSynthesizerExtensionParameterAddress::randomness:
+            //     // TODO: These will be handled by region controls
+            //     break;
         }
     }
 
@@ -167,11 +160,35 @@ public:
     }
 
     void handleMIDI2VoiceMessage(const struct MIDIUniversalMessage& message) {
-        // Note On: Always enable granular engine
+        // Note On
         if (message.channelVoice2.status == kMIDICVStatusNoteOn) {
-            // Granular engine runs continuously
-            // Just confirm MIDI is working
+            int note = message.channelVoice2.note.number;
+            float velocity = message.channelVoice2.note.velocity / 127.0f;
+            noteOn(note, velocity);
         }
+        // Note Off
+        else if (message.channelVoice2.status == kMIDICVStatusNoteOff) {
+            int note = message.channelVoice2.note.number;
+            noteOff(note);
+        }
+    }
+
+    // MARK: - MIDI Note Control
+
+    void noteOn(int noteNumber, float velocity) {
+        mGranularEngine.noteOn(noteNumber, velocity);
+    }
+
+    void noteOff(int noteNumber) {
+        mGranularEngine.noteOff(noteNumber);
+    }
+
+    void allNotesOff() {
+        mGranularEngine.allNotesOff();
+    }
+
+    int getActiveVoiceCount() const {
+        return mGranularEngine.getActiveVoiceCount();
     }
 
     // MARK: - Waveform Data Access
@@ -181,6 +198,210 @@ public:
 
     int getWaveformSize() const {
         return mGranularEngine.getBufferSize();
+    }
+
+    // MARK: - Grain Region Management
+    int getGrainRegionCount() const {
+        return mGranularEngine.getGrainRegionCount();
+    }
+
+    GrainRegion getGrainRegion(int index) const {
+        return mGranularEngine.getGrainRegion(index);
+    }
+
+    void setGrainRegion(int index, const GrainRegion& region) {
+        mGranularEngine.setGrainRegion(index, region);
+    }
+
+    void setRegionPlaybackDirection(int index, PlaybackDirection direction) {
+        mGranularEngine.setRegionPlaybackDirection(index, direction);
+    }
+
+    void setRegionJitter(int index, float jitter) {
+        mGranularEngine.setRegionJitter(index, jitter);
+    }
+
+    void setRegionPlaybackSpeed(int index, float speed) {
+        mGranularEngine.setRegionPlaybackSpeed(index, speed);
+    }
+
+    float getRegionPlaybackSpeed(int index) const {
+        return mGranularEngine.getRegionPlaybackSpeed(index);
+    }
+
+    float getRegionPlaybackPosition(int index) const {
+        return mGranularEngine.getRegionPlaybackPosition(index);
+    }
+
+    void addGrainRegion() {
+        mGranularEngine.addGrainRegion();
+    }
+
+    void removeGrainRegion(int index) {
+        mGranularEngine.removeGrainRegion(index);
+    }
+
+    // MARK: - LFO Control
+
+    void setLFOFrequency(float freq) {
+        mGranularEngine.setLFOFrequency(freq);
+    }
+
+    void setLFOWaveform(int waveform) {
+        mGranularEngine.setLFOWaveform(waveform);
+    }
+
+    void setLFOModulationEnabled(bool enabled) {
+        mGranularEngine.setLFOModulationEnabled(enabled);
+    }
+
+    void setLFOTarget(int target) {
+        mGranularEngine.setLFOTarget(target);
+    }
+
+    void setLFODepth(float depth) {
+        mGranularEngine.setLFODepth(depth);
+    }
+
+    bool getLFOModulationEnabled() const {
+        return mGranularEngine.getLFOModulationEnabled();
+    }
+
+    int getLFOTarget() const {
+        return mGranularEngine.getLFOTarget();
+    }
+
+    float getLFODepth() const {
+        return mGranularEngine.getLFODepth();
+    }
+
+    // MARK: - Region LFO Control (Per-region for position/width modulation)
+
+    void setRegionLFOEnabled(int index, bool enabled) {
+        mGranularEngine.setRegionLFOEnabled(index, enabled);
+    }
+
+    void setRegionLFOWaveform(int index, int waveform) {
+        mGranularEngine.setRegionLFOWaveform(index, waveform);
+    }
+
+    void setRegionLFOFrequency(int index, float frequency) {
+        mGranularEngine.setRegionLFOFrequency(index, frequency);
+    }
+
+    void setRegionLFODepth(int index, float depth) {
+        mGranularEngine.setRegionLFODepth(index, depth);
+    }
+
+    void setRegionLFOTarget(int index, int target) {
+        mGranularEngine.setRegionLFOTarget(index, target);
+    }
+
+    bool getRegionLFOEnabled(int index) const {
+        return mGranularEngine.getRegionLFOEnabled(index);
+    }
+
+    int getRegionLFOWaveform(int index) const {
+        return mGranularEngine.getRegionLFOWaveform(index);
+    }
+
+    float getRegionLFOFrequency(int index) const {
+        return mGranularEngine.getRegionLFOFrequency(index);
+    }
+
+    float getRegionLFODepth(int index) const {
+        return mGranularEngine.getRegionLFODepth(index);
+    }
+
+    int getRegionLFOTarget(int index) const {
+        return mGranularEngine.getRegionLFOTarget(index);
+    }
+
+    // MARK: - Manual Position/Width Control (for XY Pad)
+
+    void setRegionManualPosition(int index, float position) {
+        mGranularEngine.setRegionManualPosition(index, position);
+    }
+
+    void setRegionManualWidth(int index, float width) {
+        mGranularEngine.setRegionManualWidth(index, width);
+    }
+
+    float getRegionManualPosition(int index) const {
+        return mGranularEngine.getRegionManualPosition(index);
+    }
+
+    float getRegionManualWidth(int index) const {
+        return mGranularEngine.getRegionManualWidth(index);
+    }
+
+    // MARK: - Region LFO Modulation Values (for UI animation)
+    float getRegionLFOPositionMod(int index) const {
+        return mGranularEngine.getRegionLFOPositionMod(index);
+    }
+
+    float getRegionLFOWidthMod(int index) const {
+        return mGranularEngine.getRegionLFOWidthMod(index);
+    }
+
+    // MARK: - Voice ADSR Envelope Control
+
+    void setEnvelopeAttack(float attack) {
+        mGranularEngine.setEnvelopeAttack(attack);
+    }
+
+    void setEnvelopeDecay(float decay) {
+        mGranularEngine.setEnvelopeDecay(decay);
+    }
+
+    void setEnvelopeSustain(float sustain) {
+        mGranularEngine.setEnvelopeSustain(sustain);
+    }
+
+    void setEnvelopeRelease(float release) {
+        mGranularEngine.setEnvelopeRelease(release);
+    }
+
+    float getEnvelopeAttack() const {
+        return mGranularEngine.getEnvelopeAttack();
+    }
+
+    float getEnvelopeDecay() const {
+        return mGranularEngine.getEnvelopeDecay();
+    }
+
+    float getEnvelopeSustain() const {
+        return mGranularEngine.getEnvelopeSustain();
+    }
+
+    float getEnvelopeRelease() const {
+        return mGranularEngine.getEnvelopeRelease();
+    }
+
+    // MARK: - Waveform Management
+
+    int getWaveformCount() const {
+        return mGranularEngine.getWaveformCount();
+    }
+
+    std::string getWaveformName(int index) const {
+        return mGranularEngine.getWaveformName(index);
+    }
+
+    int getCurrentWaveformIndex() const {
+        return mGranularEngine.getCurrentWaveformIndex();
+    }
+
+    void setCurrentWaveform(int index) {
+        mGranularEngine.setCurrentWaveform(index);
+    }
+
+    bool loadWaveform(const std::string& name, const float* data, int sampleCount) {
+        return mGranularEngine.loadWaveform(name, data, sampleCount);
+    }
+
+    bool removeWaveform(int index) {
+        return mGranularEngine.removeWaveform(index);
     }
 
     // MARK: - Member Variables
