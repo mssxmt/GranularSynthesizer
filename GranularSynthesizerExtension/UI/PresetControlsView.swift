@@ -131,13 +131,6 @@ struct PresetControlsView: View {
         // Load waveform selection
         audioUnit.setCurrentWaveform(Int32(preset.waveformIndex))
 
-        // Load LFO settings
-        audioUnit.setLFOModulationEnabled(preset.lfoEnabled)
-        audioUnit.setLFOFrequency(preset.lfoFrequency)
-        audioUnit.setLFOWaveform(Int32(preset.lfoWaveform))
-        audioUnit.setLFOTarget(Int32(preset.lfoTarget))
-        audioUnit.setLFODepth(preset.lfoDepth)
-
         // Load Voice ADSR settings
         audioUnit.setEnvelopeAttack(preset.envelopeAttack)
         audioUnit.setEnvelopeDecay(preset.envelopeDecay)
@@ -162,11 +155,7 @@ struct PresetControlsView: View {
         // Get current waveform index
         let currentWaveformIndex = audioUnit.getCurrentWaveformIndex()
 
-        // Gather current settings
-        let lfoEnabled = audioUnit.getLFOModulationEnabled()
-        let lfoTarget = audioUnit.getLFOTarget()
-        let lfoDepth = audioUnit.getLFODepth()
-
+        // Get envelope settings
         let envelopeAttack = audioUnit.getEnvelopeAttack()
         let envelopeDecay = audioUnit.getEnvelopeDecay()
         let envelopeSustain = audioUnit.getEnvelopeSustain()
@@ -187,11 +176,6 @@ struct PresetControlsView: View {
             author: "User",
             waveformIndex: Int(currentWaveformIndex),
             grainRegions: regionPresetArray,
-            lfoEnabled: lfoEnabled,
-            lfoFrequency: 1.0, // Would need getter
-            lfoWaveform: 0, // Would need getter
-            lfoTarget: Int(lfoTarget),
-            lfoDepth: lfoDepth,
             envelopeAttack: envelopeAttack,
             envelopeDecay: envelopeDecay,
             envelopeSustain: envelopeSustain,

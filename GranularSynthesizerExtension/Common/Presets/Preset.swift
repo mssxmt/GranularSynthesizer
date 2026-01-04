@@ -87,13 +87,6 @@ struct Preset: Codable {
     // Grain regions (each region has its own grain parameters)
     var grainRegions: [GrainRegionPreset]
 
-    // LFO settings
-    var lfoEnabled: Bool
-    var lfoFrequency: Float
-    var lfoWaveform: Int
-    var lfoTarget: Int
-    var lfoDepth: Float
-
     // Master AMP envelope (ADSR)
     var envelopeAttack: Float
     var envelopeDecay: Float
@@ -105,11 +98,6 @@ struct Preset: Codable {
         author: String = "User",
         waveformIndex: Int = 0,
         grainRegions: [GrainRegionPreset] = [],
-        lfoEnabled: Bool = false,
-        lfoFrequency: Float = 1.0,
-        lfoWaveform: Int = 0,
-        lfoTarget: Int = 0,
-        lfoDepth: Float = 0.5,
         envelopeAttack: Float = 0.01,
         envelopeDecay: Float = 0.1,
         envelopeSustain: Float = 0.7,
@@ -120,11 +108,6 @@ struct Preset: Codable {
         self.date = Date()
         self.waveformIndex = waveformIndex
         self.grainRegions = grainRegions
-        self.lfoEnabled = lfoEnabled
-        self.lfoFrequency = lfoFrequency
-        self.lfoWaveform = lfoWaveform
-        self.lfoTarget = lfoTarget
-        self.lfoDepth = lfoDepth
         self.envelopeAttack = envelopeAttack
         self.envelopeDecay = envelopeDecay
         self.envelopeSustain = envelopeSustain
@@ -155,7 +138,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.0, endPosition: 0.25, pitchShift: 0.0, gain: 1.0, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: false,
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
             envelopeSustain: 0.7,
@@ -167,7 +149,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, pitchShift: 0.0, gain: 0.7, active: true, jitter: 0.1, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: false,
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
             envelopeSustain: 0.7,
@@ -179,7 +160,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, pitchShift: 0.0, gain: 0.5, active: true, jitter: 0.2, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: false,
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
             envelopeSustain: 0.7,
@@ -191,11 +171,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.2, endPosition: 0.8, pitchShift: 0.0, gain: 0.8, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: true,
-            lfoFrequency: 0.5,
-            lfoWaveform: 0,
-            lfoTarget: 0,
-            lfoDepth: 0.7,
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
             envelopeSustain: 0.7,
@@ -207,7 +182,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, pitchShift: 0.0, gain: 0.6, active: true, jitter: 0.05, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: false,
             envelopeAttack: 0.5,
             envelopeDecay: 0.3,
             envelopeSustain: 0.8,
@@ -219,11 +193,6 @@ class PresetManager {
             grainRegions: [
                 GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, pitchShift: 0.0, gain: 0.5, active: true, jitter: 0.8, playbackDirection: 3, playbackSpeed: 0.0000227)
             ],
-            lfoEnabled: true,
-            lfoFrequency: 8.0,
-            lfoWaveform: 4,
-            lfoTarget: 0,
-            lfoDepth: 1.0,
             envelopeAttack: 0.001,
             envelopeDecay: 0.05,
             envelopeSustain: 0.3,

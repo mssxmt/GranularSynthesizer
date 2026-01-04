@@ -288,40 +288,6 @@
     _kernel.removeGrainRegion(index);
 }
 
-#pragma mark - LFO Control
-
-- (void)setLFOFrequency:(float)freq {
-    _kernel.setLFOFrequency(freq);
-}
-
-- (void)setLFOWaveform:(int)waveform {
-    _kernel.setLFOWaveform(waveform);
-}
-
-- (void)setLFOModulationEnabled:(BOOL)enabled {
-    _kernel.setLFOModulationEnabled(enabled);
-}
-
-- (void)setLFOTarget:(int)target {
-    _kernel.setLFOTarget(target);
-}
-
-- (void)setLFODepth:(float)depth {
-    _kernel.setLFODepth(depth);
-}
-
-- (BOOL)getLFOModulationEnabled {
-    return _kernel.getLFOModulationEnabled();
-}
-
-- (int)getLFOTarget {
-    return _kernel.getLFOTarget();
-}
-
-- (float)getLFODepth {
-    return _kernel.getLFODepth();
-}
-
 #pragma mark - Region LFO Control
 
 - (void)setRegionLFOEnabled:(int)index enabled:(BOOL)enabled {

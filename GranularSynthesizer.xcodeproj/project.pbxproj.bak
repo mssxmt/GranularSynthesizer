@@ -13,7 +13,6 @@
 		092EAEF42F07E82000DD4ABB /* PresetControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */; };
 		092EAEF62F07E83000DD4ABB /* Preset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF72F07E83000DD4ABB /* Preset.swift */; };
 		092EAEF82F07E85000DD4ABB /* WaveformManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */; };
-		092EAEFA2F07E86000DD4ABB /* TopControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEFB2F07E86000DD4ABB /* TopControlBar.swift */; };
 		097656D42F07BB4700A99514 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D32F07BB4700A99514 /* ContentView.swift */; };
 		097656D82F07BB4700A99514 /* ViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */; };
 		097656DB2F07BB4700A99514 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = 097656DA2F07BB4700A99514 /* Synth.aif */; };
@@ -90,7 +89,6 @@
 		092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetControlsView.swift; sourceTree = "<group>"; };
 		092EAEF72F07E83000DD4ABB /* Preset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preset.swift; sourceTree = "<group>"; };
 		092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformManagerView.swift; sourceTree = "<group>"; };
-		092EAEFB2F07E86000DD4ABB /* TopControlBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopControlBar.swift; sourceTree = "<group>"; };
 		092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GranularEngine.hpp; sourceTree = "<group>"; };
 		092EAEC52F07E05C00DD4ABB /* Grain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grain.hpp; sourceTree = "<group>"; };
 		097656D02F07BB4700A99514 /* GranularSynthesizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GranularSynthesizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -378,7 +376,6 @@
 				092EAEF32F07E81000DD4ABB /* EnvelopeControlsView.swift */,
 				092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */,
 				092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */,
-				092EAEFB2F07E86000DD4ABB /* TopControlBar.swift */,
 				097657302F07BB4800A99514 /* ParameterSlider.swift */,
 			);
 			path = UI;
@@ -613,7 +610,6 @@
 				092EAEF42F07E82000DD4ABB /* PresetControlsView.swift in Sources */,
 				092EAEF62F07E83000DD4ABB /* Preset.swift in Sources */,
 				092EAEF82F07E85000DD4ABB /* WaveformManagerView.swift in Sources */,
-				092EAEFA2F07E86000DD4ABB /* TopControlBar.swift in Sources */,
 				0976572F2F07BB4800A99514 /* GranularSynthesizerExtensionMainView.swift in Sources */,
 				097657212F07BB4800A99514 /* GranularSynthesizerExtensionAudioUnit.mm in Sources */,
 			);

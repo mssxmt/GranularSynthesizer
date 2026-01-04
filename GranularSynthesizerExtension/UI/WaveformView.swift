@@ -328,7 +328,7 @@ struct WaveformView: View {
                     loadWaveform()
                 }
             }
-            .frame(height: 100)
+            .frame(height: 80)
 
             // Region selector buttons
             ScrollView(.horizontal, showsIndicators: false) {
@@ -355,7 +355,7 @@ struct WaveformView: View {
                 }
                 .padding(.horizontal, 4)
             }
-            .frame(height: 50)
+            .frame(height: 40)
 
             // Selected region controls with position sliders
             if let selectedIndex = selectedRegionIndex, selectedIndex < grainRegions.count {
@@ -888,7 +888,7 @@ struct RegionLFOSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Header
+            // Header with LFO enable toggle
             HStack(spacing: 6) {
                 Image(systemName: "waveform.path")
                     .foregroundColor(regionColor)
@@ -896,6 +896,18 @@ struct RegionLFOSection: View {
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(regionColor)
+
+                Spacer()
+
+                Toggle("", isOn: Binding(
+                    get: { region.lfoEnabled },
+                    set: { newValue in
+                        region.lfoEnabled = newValue
+                        updateLFOEnabled(newValue)
+                    }
+                ))
+                .toggleStyle(SwitchToggleStyle())
+                .labelsHidden()
             }
 
             Divider()

@@ -241,40 +241,6 @@ public:
         mGranularEngine.removeGrainRegion(index);
     }
 
-    // MARK: - LFO Control
-
-    void setLFOFrequency(float freq) {
-        mGranularEngine.setLFOFrequency(freq);
-    }
-
-    void setLFOWaveform(int waveform) {
-        mGranularEngine.setLFOWaveform(waveform);
-    }
-
-    void setLFOModulationEnabled(bool enabled) {
-        mGranularEngine.setLFOModulationEnabled(enabled);
-    }
-
-    void setLFOTarget(int target) {
-        mGranularEngine.setLFOTarget(target);
-    }
-
-    void setLFODepth(float depth) {
-        mGranularEngine.setLFODepth(depth);
-    }
-
-    bool getLFOModulationEnabled() const {
-        return mGranularEngine.getLFOModulationEnabled();
-    }
-
-    int getLFOTarget() const {
-        return mGranularEngine.getLFOTarget();
-    }
-
-    float getLFODepth() const {
-        return mGranularEngine.getLFODepth();
-    }
-
     // MARK: - Region LFO Control (Per-region for position/width modulation)
 
     void setRegionLFOEnabled(int index, bool enabled) {

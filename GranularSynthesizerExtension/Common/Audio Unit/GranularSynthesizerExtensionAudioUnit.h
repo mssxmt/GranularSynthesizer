@@ -64,16 +64,6 @@
 - (void)addGrainRegion;
 - (void)removeGrainRegion:(int)index;
 
-// MARK: - LFO Control
-- (void)setLFOFrequency:(float)freq;
-- (void)setLFOWaveform:(int)waveform;
-- (void)setLFOModulationEnabled:(BOOL)enabled;
-- (void)setLFOTarget:(int)target;
-- (void)setLFODepth:(float)depth;
-- (BOOL)getLFOModulationEnabled;
-- (int)getLFOTarget;
-- (float)getLFODepth;
-
 // MARK: - Region LFO Control (Per-region for position/width modulation)
 - (void)setRegionLFOEnabled:(int)index enabled:(BOOL)enabled;
 - (void)setRegionLFOWaveform:(int)index waveform:(NSInteger)waveform;

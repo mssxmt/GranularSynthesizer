@@ -13,46 +13,32 @@ struct GranularSynthesizerExtensionMainView: View {
     var audioUnit: AUAudioUnit?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Text("Granular Synthesizer")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.bottom)
+        VStack(spacing: 0) {
+            // Title
+            Text("Granular Synthesizer")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
 
-                // Preset Management
-                PresetControlsView(audioUnit: audioUnit)
-                    .padding()
+            // Top Control Bar (Compact horizontal)
+            TopControlBar(parameterTree: parameterTree, audioUnit: audioUnit)
+                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
 
-                // Waveform Display with Grain Regions
+            Divider()
+
+            // Main Content: Grain Regions with Waveform
+            ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Grain Regions")
                         .font(.headline)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+
                     WaveformView(audioUnit: audioUnit)
                 }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-
-                // Waveform Management
-                WaveformManagerView(audioUnit: audioUnit)
-                    .padding()
-
-                // Master
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Master")
-                        .font(.headline)
-                    ParameterSlider(param: parameterTree.global.gain)
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-
-                // Envelope Modulation
-                EnvelopeControlsView(audioUnit: audioUnit)
-                    .padding()
             }
-            .padding()
         }
     }
 }

@@ -96,6 +96,10 @@ public:
         , mDecayTime(0.1f)
         , mSustainLevel(0.7f)
         , mReleaseTime(0.2f)
+        , mCurrentSample(0)
+        , mAttackSamples(0)
+        , mDecaySamples(0)
+        , mReleaseSamples(0)
     {}
 
     void setAttack(float time) {
@@ -116,14 +120,20 @@ public:
 
     void trigger() {
         mStage = EnvelopeStage::attack;
-        mLevel = 0.001f;  // Start from near zero (avoid log(0))
-        calculateAttackRate();
+        mLevel = 0.0f;
+        mCurrentSample = 0;
+        mAttackSamples = static_cast<int64_t>(mAttackTime * mSampleRate);
+        mDecaySamples = static_cast<int64_t>(mDecayTime * mSampleRate);
+        mReleaseSamples = static_cast<int64_t>(mReleaseTime * mSampleRate);
+        mReleaseStartLevel = 0.0f;
     }
 
     void release() {
-        if (mStage != EnvelopeStage::idle) {
+        if (mStage != EnvelopeStage::idle && mStage != EnvelopeStage::release) {
             mStage = EnvelopeStage::release;
-            calculateReleaseRate();
+            mCurrentSample = 0;
+            mReleaseSamples = static_cast<int64_t>(mReleaseTime * mSampleRate);
+            mReleaseStartLevel = mLevel;
         }
     }
 
@@ -134,21 +144,31 @@ public:
                 break;
 
             case EnvelopeStage::attack: {
-                // Exponential approach to 1.0
-                mLevel *= (1.0f + mAttackRate);
-                if (mLevel >= 0.99f) {
+                if (mAttackSamples > 0) {
+                    mLevel = static_cast<float>(mCurrentSample) / static_cast<float>(mAttackSamples);
+                    mCurrentSample++;
+                    if (mCurrentSample >= mAttackSamples) {
+                        mLevel = 1.0f;
+                        mStage = EnvelopeStage::decay;
+                        mCurrentSample = 0;
+                    }
+                } else {
                     mLevel = 1.0f;
                     mStage = EnvelopeStage::decay;
-                    calculateDecayRate();
                 }
                 break;
             }
 
             case EnvelopeStage::decay: {
-                // Exponential decay to sustain level
-                mLevel *= mDecayMultiplier;
-                float target = std::max(0.001f, mSustainLevel);
-                if (mLevel <= target || mDecayMultiplier >= 1.0f) {
+                if (mDecaySamples > 0) {
+                    float decayRange = 1.0f - mSustainLevel;
+                    mLevel = 1.0f - (static_cast<float>(mCurrentSample) / static_cast<float>(mDecaySamples)) * decayRange;
+                    mCurrentSample++;
+                    if (mCurrentSample >= mDecaySamples) {
+                        mLevel = mSustainLevel;
+                        mStage = EnvelopeStage::sustain;
+                    }
+                } else {
                     mLevel = mSustainLevel;
                     mStage = EnvelopeStage::sustain;
                 }
@@ -160,9 +180,14 @@ public:
                 break;
 
             case EnvelopeStage::release: {
-                // Exponential decay to zero
-                mLevel *= mReleaseMultiplier;
-                if (mLevel <= 0.001f) {
+                if (mReleaseSamples > 0) {
+                    mLevel = mReleaseStartLevel * (1.0f - static_cast<float>(mCurrentSample) / static_cast<float>(mReleaseSamples));
+                    mCurrentSample++;
+                    if (mCurrentSample >= mReleaseSamples) {
+                        mLevel = 0.0f;
+                        mStage = EnvelopeStage::idle;
+                    }
+                } else {
                     mLevel = 0.0f;
                     mStage = EnvelopeStage::idle;
                 }
@@ -191,37 +216,6 @@ public:
     float getRelease() const { return mReleaseTime; }
 
 private:
-    void calculateAttackRate() {
-        // For exponential attack: reach ~99% of target in attack time
-        float samples = static_cast<float>(mAttackTime * mSampleRate);
-        if (samples > 1.0f) {
-            mAttackRate = std::pow(0.01f, -1.0f / samples) - 1.0f;
-        } else {
-            mAttackRate = 1.0f;
-        }
-    }
-
-    void calculateDecayRate() {
-        // For exponential decay: decay from 1.0 to sustain level in decay time
-        float target = std::max(0.001f, mSustainLevel);
-        float samples = static_cast<float>(mDecayTime * mSampleRate);
-        if (samples > 1.0f && target > 0.0f) {
-            mDecayMultiplier = std::pow(target, 1.0f / samples);
-        } else {
-            mDecayMultiplier = target;
-        }
-    }
-
-    void calculateReleaseRate() {
-        // For exponential release: decay from current level to ~0.1% in release time
-        float samples = static_cast<float>(mReleaseTime * mSampleRate);
-        if (samples > 1.0f) {
-            mReleaseMultiplier = std::pow(0.001f, 1.0f / samples);
-        } else {
-            mReleaseMultiplier = 0.001f;
-        }
-    }
-
     double mSampleRate;
     EnvelopeStage mStage;
     float mLevel;
@@ -230,10 +224,12 @@ private:
     float mSustainLevel;
     float mReleaseTime;
 
-    // Pre-calculated multipliers for exponential curves
-    float mAttackRate = 0.0f;
-    float mDecayMultiplier = 0.99f;
-    float mReleaseMultiplier = 0.99f;
+    // Linear envelope state
+    int64_t mCurrentSample;
+    int64_t mAttackSamples;
+    int64_t mDecaySamples;
+    int64_t mReleaseSamples;
+    float mReleaseStartLevel;
 };
 
 // MARK: - Voice Structure for MIDI
@@ -357,6 +353,12 @@ public:
         for (int i = 0; i < MAX_VOICES; ++i) {
             mVoices[i] = Voice(sampleRate);
         }
+
+        // Initialize region LFOs with correct sample rate
+        for (int i = 0; i < MAX_GRAIN_REGIONS; ++i) {
+            mRegionLFOs[i] = LFO(sampleRate);
+        }
+
         // Generate white noise buffer as default test audio
         addDefaultWaveform();
     }
@@ -452,38 +454,6 @@ public:
     }
 
     // MARK: - LFO Control
-
-    void setLFOFrequency(float freq) {
-        mLFO.setFrequency(freq);
-    }
-
-    void setLFOWaveform(int waveform) {
-        mLFO.setWaveform(static_cast<LFOWaveform>(waveform));
-    }
-
-    void setLFOModulationEnabled(bool enabled) {
-        mLFOModulation.enabled = enabled;
-    }
-
-    void setLFOTarget(int target) {
-        mLFOModulation.targetParameter = target;
-    }
-
-    void setLFODepth(float depth) {
-        mLFOModulation.depth = std::clamp(depth, 0.0f, 1.0f);
-    }
-
-    bool getLFOModulationEnabled() const {
-        return mLFOModulation.enabled;
-    }
-
-    int getLFOTarget() const {
-        return mLFOModulation.targetParameter;
-    }
-
-    float getLFODepth() const {
-        return mLFOModulation.depth;
-    }
 
     // MARK: - Region LFO Management (Per-region for position/width modulation)
 
@@ -615,11 +585,11 @@ public:
     // MARK: - Voice ADSR Envelope Control
 
     void setEnvelopeAttack(float attack) {
-        mVoiceAttack = std::clamp(attack, 0.001f, 2.0f);
+        mVoiceAttack = std::clamp(attack, 0.001f, 10.0f);
     }
 
     void setEnvelopeDecay(float decay) {
-        mVoiceDecay = std::clamp(decay, 0.001f, 2.0f);
+        mVoiceDecay = std::clamp(decay, 0.001f, 10.0f);
     }
 
     void setEnvelopeSustain(float sustain) {
@@ -627,7 +597,7 @@ public:
     }
 
     void setEnvelopeRelease(float release) {
-        mVoiceRelease = std::clamp(release, 0.001f, 5.0f);
+        mVoiceRelease = std::clamp(release, 0.001f, 10.0f);
     }
 
     float getEnvelopeAttack() const {
@@ -761,14 +731,24 @@ public:
     void addGrainRegion() {
         if (mGrainRegions.size() < MAX_GRAIN_REGIONS) {
             GrainRegion newRegion;
-            newRegion.startPosition = 0.4f;
-            newRegion.endPosition = 0.6f;
+            // Set manual position/width (used for LFO modulation calculation)
+            newRegion.manualPosition = 0.4f;
+            newRegion.manualWidth = 0.2f;
+            // Calculate startPosition/endPosition from manual values
+            newRegion.startPosition = newRegion.manualPosition;
+            newRegion.endPosition = newRegion.manualPosition + newRegion.manualWidth;
             newRegion.pitchShift = 0.0f;
             newRegion.gain = 1.0f;
             newRegion.jitter = 0.0f;
             newRegion.playbackDirection = PlaybackDirection::forward;
             newRegion.playbackSpeed = 0.0000227f;  // Default 1x speed
             newRegion.active = true;
+            // LFO defaults
+            newRegion.lfoEnabled = false;
+            newRegion.lfoWaveform = 0;
+            newRegion.lfoFrequency = 1.0f;
+            newRegion.lfoDepth = 0.5f;
+            newRegion.lfoTarget = 0;
             mGrainRegions.push_back(newRegion);
         }
     }
@@ -788,20 +768,9 @@ public:
     }
 
     float process() {
-        // Process global LFO (for pitch modulation)
-        float lfoPitchMod = 0.0f;
-        if (mLFOModulation.enabled) {
-            float lfoValue = mLFO.process();
-            // Default: LFO modulates pitch
-            lfoPitchMod = lfoValue * mLFOModulation.depth * 12.0f; // +/- 12 semitones
-        }
-
         // Process per-region LFOs (for position/width modulation)
         for (int i = 0; i < static_cast<int>(mGrainRegions.size()); ++i) {
             auto& region = mGrainRegions[i];
-            // Reset modulation values
-            region.lfoPositionMod = 0.0f;
-            region.lfoWidthMod = 0.0f;
 
             if (region.lfoEnabled && region.lfoTarget > 0) {
                 // Update LFO waveform if changed
@@ -812,13 +781,36 @@ public:
                 float lfoValue = mRegionLFOs[i].process();
                 float modAmount = lfoValue * region.lfoDepth;
 
+                // Calculate base position from manual values
+                float leftEdge = region.manualPosition;
+                float width = region.manualWidth;
+
+                // Apply LFO modulation
                 if (region.lfoTarget == 1) {
                     // Position modulation: ±10%
-                    region.lfoPositionMod = modAmount * 0.1f;
+                    leftEdge += modAmount * 0.1f;
                 } else if (region.lfoTarget == 2) {
                     // Width modulation: ±20%
-                    region.lfoWidthMod = modAmount * 0.2f;
+                    width += modAmount * 0.2f * width;
                 }
+
+                // Clamp values
+                leftEdge = std::clamp(leftEdge, 0.0f, 1.0f - 0.02f);
+                width = std::clamp(width, 0.02f, 1.0f - leftEdge);
+
+                // Update region's actual position (used for grain spawning)
+                region.startPosition = leftEdge;
+                region.endPosition = leftEdge + width;
+
+                // Store modulation values for UI
+                region.lfoPositionMod = leftEdge - region.manualPosition;
+                region.lfoWidthMod = (width - region.manualWidth) / region.manualWidth;
+            } else {
+                // LFO disabled: use manual values
+                region.startPosition = region.manualPosition;
+                region.endPosition = region.manualPosition + region.manualWidth;
+                region.lfoPositionMod = 0.0f;
+                region.lfoWidthMod = 0.0f;
             }
         }
 
@@ -853,15 +845,14 @@ public:
                 activeCount++;
 
                 // Process each active region for this voice
-                if (!mVoices[i].isInRelease) {
-                    for (auto& region : mGrainRegions) {
-                        if (region.active) {
-                            // Update region playback position for UI display
-                            updateRegionPlaybackPosition(region);
+                // Continue spawning grains even during release phase
+                for (auto& region : mGrainRegions) {
+                    if (region.active) {
+                        // Update region playback position for UI display
+                        updateRegionPlaybackPosition(region);
 
-                            // Spawn grain for this region at current playback position
-                            spawnGrainForPlayback(mVoices[i], region, lfoPitchMod);
-                        }
+                        // Spawn grain for this region at current playback position
+                        spawnGrainForPlayback(mVoices[i], region);
                     }
                 }
 
@@ -877,10 +868,14 @@ public:
                     }
                 }
 
-                // Add continuous output (from jitter=0 regions)
-                voiceOutput += mVoices[i].continuousOutput;
+                // Add continuous output (from jitter=0 regions) with envelope applied
+                voiceOutput += mVoices[i].continuousOutput * masterEnvLevel;
+
+                // Clear continuous output after applying envelope (it's regenerated each sample)
+                mVoices[i].continuousOutput = 0.0f;
 
                 // Apply velocity and MASTER envelope (amp) to voice output
+                // ADSR controls overall voice level, affecting all grains in real-time
                 output += voiceOutput * mVoices[i].velocity * masterEnvLevel;
             }
         }
@@ -927,22 +922,7 @@ private:
 
         auto& state = mRegionPlaybackStates[regionIndex];
 
-        // manualPosition is left edge, manualWidth is width from left edge
-        // Apply LFO modulation
-        float leftEdge = region.manualPosition + region.lfoPositionMod;
-        float width = region.manualWidth * (1.0f + region.lfoWidthMod);
-
-        // Clamp values
-        leftEdge = std::clamp(leftEdge, 0.0f, 1.0f - 0.02f);
-        width = std::clamp(width, 0.02f, 1.0f - leftEdge);
-
-        // Calculate right edge
-        float rightEdge = leftEdge + width;
-
-        // Update region's startPosition and endPosition
-        region.startPosition = leftEdge;
-        region.endPosition = rightEdge;
-
+        // Note: region.startPosition/endPosition are already updated by process() with LFO modulation
         float range = region.endPosition - region.startPosition;
 
         // Update position based on direction with region's playback speed
@@ -1021,7 +1001,7 @@ private:
         return sample1 + frac * (sample2 - sample1);
     }
 
-    void spawnGrainForPlayback(Voice& voice, GrainRegion& region, float lfoPitchMod) {
+    void spawnGrainForPlayback(Voice& voice, GrainRegion& region) {
         int regionIndex = 0;
         for (size_t i = 0; i < mGrainRegions.size(); ++i) {
             if (&mGrainRegions[i] == &region) {
@@ -1041,14 +1021,15 @@ private:
         // Normalize gain by active region count to prevent overload
         float normalizedGain = region.gain / std::sqrt(static_cast<float>(activeRegionCount));
 
-        // Apply voice pitch + region pitch + LFO modulation
+        // Apply voice pitch + region pitch
         float basePitchRatio = region.getPitchRatio();
         float voicePitchRatio = std::pow(2.0f, voice.basePitchSemitones / 12.0f);
-        float modulatedPitchRatio = basePitchRatio * voicePitchRatio * std::pow(2.0f, lfoPitchMod / 12.0f);
+        float modulatedPitchRatio = basePitchRatio * voicePitchRatio;
 
         if (region.jitter == 0.0f) {
             // CONTINUOUS PLAYBACK MODE (jitter=0)
             // Read directly from audio buffer at current playback position
+            // region.startPosition/endPosition already include LFO modulation (updated in process())
             float range = region.endPosition - region.startPosition;
             float pos = region.startPosition + state.position * range;
 
@@ -1057,7 +1038,7 @@ private:
 
             // For continuous mode with pitch shift, we need to read multiple samples
             // and crossfade them to simulate pitch shifting
-            // For now, just apply gain normally (pitch affects grain-based playback more)
+            // For now, just apply gain and envelope (pitch affects grain-based playback more)
             voice.continuousOutput += sample * normalizedGain;
         } else {
             // GRANULAR MODE (jitter>0)
@@ -1075,7 +1056,7 @@ private:
             }
             state.samplesUntilNextGrain = adjustedSpawnRate;
 
-            // Calculate base position
+            // region.startPosition/endPosition already include LFO modulation (updated in process())
             float range = region.endPosition - region.startPosition;
             float pos = region.startPosition + state.position * range;
 
@@ -1093,7 +1074,7 @@ private:
             Grain grain;
             grain.init(startPos, grainSize, modulatedPitchRatio, mAudioBuffer);
             grain.setGain(normalizedGain);
-            grain.setVolumeScale(1.0f);  // Full scale, master envelope handles volume
+            grain.setVolumeScale(1.0f);  // Volume controlled by voice-level ADSR
 
             voice.grains.push_back(grain);
         }
@@ -1102,9 +1083,6 @@ private:
     double mSampleRate;
     double mTime;
 
-    // LFO
-    LFO mLFO;
-    LFOModulation mLFOModulation;
 
     // Voice ADSR parameters (shared by all voices) - Master AMP envelope
     float mVoiceAttack = 0.01f;
