@@ -1008,12 +1008,6 @@ private:
     }
 
     void spawnGrainForPlayback(Voice& voice, GrainRegion& region) {
-        // Skip continuous output generation if voice is in release phase
-        // This prevents "stuck notes" issue
-        if (voice.isInRelease && region.jitter == 0.0f) {
-            return;
-        }
-
         int regionIndex = 0;
         for (size_t i = 0; i < mGrainRegions.size(); ++i) {
             if (&mGrainRegions[i] == &region) {
