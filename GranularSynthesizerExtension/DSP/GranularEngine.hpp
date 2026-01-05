@@ -269,7 +269,7 @@ enum class PlaybackDirection {
 struct GrainRegion {
     float startPosition = 0.0f;  // 0.0 to 1.0
     float endPosition = 0.25f;   // 0.0 to 1.0
-    float gain = 1.0f;           // 0.0 to 1.0
+    float gain = 0.01f;          // 0.0 to 0.01 (UI displays 0-100)
     bool active = true;          // enable/disable
 
     // New parameters
@@ -378,7 +378,7 @@ public:
         for (int i = 0; i < DEFAULT_GRAIN_REGIONS; ++i) {
             mGrainRegions[i].startPosition = static_cast<float>(i) * regionSize;
             mGrainRegions[i].endPosition = static_cast<float>(i + 1) * regionSize;
-            mGrainRegions[i].gain = 1.0f;
+            mGrainRegions[i].gain = 0.01f;
             mGrainRegions[i].active = true;
         }
     }
@@ -741,7 +741,7 @@ public:
             // Calculate startPosition/endPosition from manual values
             newRegion.startPosition = newRegion.manualPosition;
             newRegion.endPosition = newRegion.manualPosition + newRegion.manualWidth;
-            newRegion.gain = 1.0f;
+            newRegion.gain = 0.01f;
             newRegion.jitter = 0.0f;
             newRegion.playbackDirection = PlaybackDirection::forward;
             newRegion.playbackSpeed = 0.0000227f;  // Default 1x speed

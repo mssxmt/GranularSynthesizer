@@ -1085,11 +1085,11 @@ struct GrainRegionControls: View {
                         RegionParameterSlider(
                             name: "Gain",
                             value: Binding(
-                                get: { region.gain },
+                                get: { region.gain * 100000 },  // DSP (0-0.01) → UI (0-100)
                                 set: { updateGain($0) }
                             ),
-                            range: 0...1,
-                            format: "%.2f",
+                            range: 0...100,
+                            format: "%.0f",
                             color: region.color
                         )
 
@@ -1200,7 +1200,7 @@ struct GrainRegionControls: View {
               let regionData = audioUnit.getGrainRegion(Int32(region.index)) else {
             return
         }
-        regionData.gain = value
+        regionData.gain = value * 0.0001  // UI (0-100) → DSP (0-0.01)
         audioUnit.setGrainRegion(Int32(region.index), region: regionData)
         onUpdate()
     }
