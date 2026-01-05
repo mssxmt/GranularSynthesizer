@@ -1093,16 +1093,27 @@ struct GrainRegionControls: View {
                             color: region.color
                         )
 
-                        RegionParameterSlider(
-                            name: "Speed",
-                            value: Binding(
-                                get: { region.playbackSpeed * 441000 },
-                                set: { updatePlaybackSpeed($0 / 441000.0) }
-                            ),
-                            range: 1...100,
-                            format: "%.0f",
-                            color: region.color
-                        )
+                        HStack(spacing: 4) {
+                            RegionParameterSlider(
+                                name: "Speed",
+                                value: Binding(
+                                    get: { region.playbackSpeed * 44100 },  // DSP → UI (1x = 1.0)
+                                    set: { updatePlaybackSpeed($0 * 0.0000227) }  // UI → DSP
+                                ),
+                                range: 0.1...10,
+                                format: "%.1f",
+                                color: region.color
+                            )
+
+                            Button(action: {
+                                updatePlaybackSpeed(0.0000227)  // Reset to 1x
+                            }) {
+                                Image(systemName: "arrow.counterclockwise")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
 
                         RegionParameterSlider(
                             name: "Jitter",
