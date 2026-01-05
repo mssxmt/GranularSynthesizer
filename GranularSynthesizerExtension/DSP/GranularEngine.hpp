@@ -276,7 +276,7 @@ struct GrainRegion {
     float jitter = 0.0f;         // Grain/jitter amount (0.0 to 1.0) - adds randomness to playback position
     PlaybackDirection playbackDirection = PlaybackDirection::forward;
     float currentPosition = 0.0f; // Current playback position for UI display (0.0 to 1.0)
-    float playbackSpeed = 0.0000227f; // Playback speed: ~1x means 1 region traversal per second (at 44100Hz)
+    float playbackSpeed = 0.1f;      // Playback speed: 0.1 = 1x (normal speed)
 
     // Per-region LFO settings (for position/width modulation)
     bool lfoEnabled = false;         // LFO enable/disable
@@ -304,8 +304,8 @@ struct GrainRegion {
         }
         if (jitter < 0.0f) jitter = 0.0f;
         if (jitter > 1.0f) jitter = 1.0f;
-        if (playbackSpeed < 0.00001f) playbackSpeed = 0.00001f;
-        if (playbackSpeed > 0.01f) playbackSpeed = 0.01f;
+        if (playbackSpeed < 0.01f) playbackSpeed = 0.01f;
+        if (playbackSpeed > 1.0f) playbackSpeed = 1.0f;
 
         // LFO parameters
         lfoFrequency = std::clamp(lfoFrequency, 0.1f, 20.0f);
@@ -726,8 +726,8 @@ public:
 
     void setRegionPlaybackSpeed(int index, float speed) {
         if (index >= 0 && index < static_cast<int>(mGrainRegions.size())) {
-            // Range: 0.1x (0.00000227) to 10x (0.000227) speed
-            mGrainRegions[index].playbackSpeed = std::clamp(speed, 0.00000227f, 0.000227f);
+            // Range: 0.1x (0.01) to 10x (1.0) speed
+            mGrainRegions[index].playbackSpeed = std::clamp(speed, 0.01f, 1.0f);
         }
     }
 

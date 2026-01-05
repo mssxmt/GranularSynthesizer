@@ -1097,8 +1097,8 @@ struct GrainRegionControls: View {
                             RegionParameterSlider(
                                 name: "Speed",
                                 value: Binding(
-                                    get: { region.playbackSpeed * 44100 },  // DSP → UI (1x = 1.0)
-                                    set: { updatePlaybackSpeed($0 * 0.0000227) }  // UI → DSP
+                                    get: { region.playbackSpeed * 10 },  // DSP 0.1 → UI 1.0
+                                    set: { updatePlaybackSpeed($0 / 10) }  // UI 1.0 → DSP 0.1
                                 ),
                                 range: 0.1...10,
                                 format: "%.1f",
@@ -1106,7 +1106,7 @@ struct GrainRegionControls: View {
                             )
 
                             Button(action: {
-                                updatePlaybackSpeed(0.0000227)  // Reset to 1x
+                                updatePlaybackSpeed(0.1)  // Reset to 1x (DSP 0.1)
                             }) {
                                 Image(systemName: "arrow.counterclockwise")
                                     .font(.caption)
