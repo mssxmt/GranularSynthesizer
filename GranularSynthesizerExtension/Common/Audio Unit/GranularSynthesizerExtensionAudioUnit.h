@@ -15,7 +15,6 @@
 
 @property (nonatomic, assign) float startPosition;
 @property (nonatomic, assign) float endPosition;
-@property (nonatomic, assign) float pitchShift;
 @property (nonatomic, assign) float gain;
 @property (nonatomic, assign) BOOL active;
 @property (nonatomic, assign) float jitter;
@@ -36,7 +35,6 @@
 
 - (instancetype)initWithStartPosition:(float)startPosition
                            endPosition:(float)endPosition
-                            pitchShift:(float)pitchShift
                                   gain:(float)gain
                                 active:(BOOL)active
                                 jitter:(float)jitter
@@ -95,6 +93,10 @@
 - (float)getEnvelopeDecay;
 - (float)getEnvelopeSustain;
 - (float)getEnvelopeRelease;
+
+// MARK: - MIDI Base Pitch Control
+- (void)setBasePitch:(float)pitch;
+- (float)getBasePitch;
 
 // MARK: - Waveform Management
 - (int)getWaveformCount;

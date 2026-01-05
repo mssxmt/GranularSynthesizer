@@ -32,7 +32,6 @@ struct GrainRegionModel: Identifiable {
     var index: Int
     var startPosition: Float
     var endPosition: Float
-    var pitchShift: Float
     var gain: Float
     var active: Bool
     var jitter: Float
@@ -480,7 +479,6 @@ struct WaveformView: View {
                     index: Int(i),
                     startPosition: regionData.startPosition,  // DSP calculated actual position
                     endPosition: regionData.endPosition,      // DSP calculated actual end position
-                    pitchShift: regionData.pitchShift,
                     gain: regionData.gain,
                     active: regionData.active,
                     jitter: regionData.jitter,
@@ -1083,18 +1081,6 @@ struct GrainRegionControls: View {
                         }
                     )
 
-                    // Other parameters
-                    RegionParameterSlider(
-                        name: "Pitch",
-                        value: Binding(
-                            get: { region.pitchShift },
-                            set: { updatePitchShift($0) }
-                        ),
-                        range: -24...24,
-                        format: "%.0f st",
-                        color: region.color
-                    )
-
                     HStack(spacing: 12) {
                         RegionParameterSlider(
                             name: "Gain",
@@ -1206,16 +1192,6 @@ struct GrainRegionControls: View {
         let clampedWidth = max(0.02, min(1.0 - region.startPosition, newWidth))
         audioUnit.setRegionManualPosition(Int32(region.index), position: region.startPosition)
         audioUnit.setRegionManualWidth(Int32(region.index), width: clampedWidth)
-        onUpdate()
-    }
-
-    private func updatePitchShift(_ value: Float) {
-        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit,
-              let regionData = audioUnit.getGrainRegion(Int32(region.index)) else {
-            return
-        }
-        regionData.pitchShift = value
-        audioUnit.setGrainRegion(Int32(region.index), region: regionData)
         onUpdate()
     }
 

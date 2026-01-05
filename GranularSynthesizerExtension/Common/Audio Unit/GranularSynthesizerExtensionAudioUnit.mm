@@ -216,7 +216,6 @@
     const GrainRegion& region = _kernel.getGrainRegion(index);
     GrainRegionData* data = [[GrainRegionData alloc] initWithStartPosition:region.startPosition
                                                           endPosition:region.endPosition
-                                                           pitchShift:region.pitchShift
                                                                  gain:region.gain
                                                                active:region.active
                                                                jitter:region.jitter
@@ -240,7 +239,6 @@
     GrainRegion cppRegion;
     cppRegion.startPosition = region.startPosition;
     cppRegion.endPosition = region.endPosition;
-    cppRegion.pitchShift = region.pitchShift;
     cppRegion.gain = region.gain;
     cppRegion.active = region.active;
     cppRegion.jitter = region.jitter;
@@ -382,6 +380,16 @@
     return _kernel.getEnvelopeRelease();
 }
 
+#pragma mark - MIDI Base Pitch Control
+
+- (void)setBasePitch:(float)pitch {
+    _kernel.setBasePitch(pitch);
+}
+
+- (float)getBasePitch {
+    return _kernel.getBasePitch();
+}
+
 #pragma mark - Waveform Management
 
 - (int)getWaveformCount {
@@ -446,7 +454,6 @@
 
 - (instancetype)initWithStartPosition:(float)startPosition
                            endPosition:(float)endPosition
-                            pitchShift:(float)pitchShift
                                   gain:(float)gain
                                 active:(BOOL)active
                                 jitter:(float)jitter
@@ -456,7 +463,6 @@
     if (self) {
         _startPosition = startPosition;
         _endPosition = endPosition;
-        _pitchShift = pitchShift;
         _gain = gain;
         _active = active;
         _jitter = jitter;

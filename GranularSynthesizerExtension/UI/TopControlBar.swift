@@ -28,6 +28,8 @@ struct TopControlBar: View {
     @State private var sustain: Double = 0.7
     @State private var release: Double = 0.2
 
+    @State private var basePitch: Float = 60.0  // MIDI note number (C4 = 60)
+
     private let presetManager = PresetManager.shared
 
     var body: some View {
@@ -76,6 +78,16 @@ struct TopControlBar: View {
                     onImport: { showingFilePicker = true }
                 )
                 .frame(maxWidth: .infinity)
+
+                Divider()
+                    .frame(height: 40)
+
+                // Base Pitch (MIDI note)
+                CompactBasePitchControl(
+                    basePitch: $basePitch,
+                    onChange: { updateBasePitch($0) }
+                )
+                .frame(maxWidth: .infinity)
             }
         }
         .frame(height: 60)
@@ -88,6 +100,7 @@ struct TopControlBar: View {
             selectedPresetIndex = presetManager.getCurrentPresetIndex()
             loadWaveforms()
             loadEnvelopeSettings()
+            loadBasePitch()
         }
         .fileImporter(
             isPresented: $showingFilePicker,
@@ -327,6 +340,30 @@ struct TopControlBar: View {
         sustain = Double(audioUnit.getEnvelopeSustain())
         release = Double(audioUnit.getEnvelopeRelease())
     }
+
+    // MARK: - Base Pitch
+    private func loadBasePitch() {
+        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit else {
+            return
+        }
+        basePitch = audioUnit.getBasePitch()
+    }
+
+    private func updateBasePitch(_ value: Float) {
+        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit else {
+            return
+        }
+        basePitch = value
+        audioUnit.setBasePitch(value)
+    }
+
+    // Convert MIDI note number to note name (e.g., 60 -> "C4", 69 -> "A4")
+    private func midiNoteToName(_ note: Float) -> String {
+        let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        let noteIndex = Int(note) % 12
+        let octave = Int(note) / 12 - 1
+        return "\(noteNames[noteIndex])\(octave)"
+    }
 }
 
 // MARK: - Compact Preset Picker
@@ -508,6 +545,44 @@ struct CompactWaveformPicker: View {
             }
 
             Button(action: onImport) {
+                Image(systemName: "plus")
+                    .font(.caption)
+            }
+        }
+    }
+}
+
+// MARK: - Compact Base Pitch Control
+struct CompactBasePitchControl: View {
+    @Binding var basePitch: Float
+    var onChange: (Float) -> Void
+
+    private var noteName: String {
+        let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        let noteIndex = Int(basePitch) % 12
+        let octave = Int(basePitch) / 12 - 1
+        return "\(noteNames[noteIndex])\(octave)"
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Button(action: {
+                let newPitch = max(0, basePitch - 1)
+                onChange(Float(newPitch))
+            }) {
+                Image(systemName: "minus")
+                    .font(.caption)
+            }
+
+            Text(noteName)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .frame(minWidth: 20)
+
+            Button(action: {
+                let newPitch = min(127, basePitch + 1)
+                onChange(Float(newPitch))
+            }) {
                 Image(systemName: "plus")
                     .font(.caption)
             }

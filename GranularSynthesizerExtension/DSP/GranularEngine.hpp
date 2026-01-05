@@ -269,7 +269,6 @@ enum class PlaybackDirection {
 struct GrainRegion {
     float startPosition = 0.0f;  // 0.0 to 1.0
     float endPosition = 0.25f;   // 0.0 to 1.0
-    float pitchShift = 0.0f;     // semitones, -24 to +24
     float gain = 1.0f;           // 0.0 to 1.0
     bool active = true;          // enable/disable
 
@@ -293,11 +292,6 @@ struct GrainRegion {
     // Current LFO modulation values (computed by process())
     float lfoPositionMod = 0.0f;  // Current LFO position modulation amount
     float lfoWidthMod = 0.0f;     // Current LFO width modulation amount
-
-    // Get pitch ratio from semitones
-    float getPitchRatio() const {
-        return std::pow(2.0f, pitchShift / 12.0f);
-    }
 
     // Ensure valid range
     void normalize() {
@@ -384,7 +378,6 @@ public:
         for (int i = 0; i < DEFAULT_GRAIN_REGIONS; ++i) {
             mGrainRegions[i].startPosition = static_cast<float>(i) * regionSize;
             mGrainRegions[i].endPosition = static_cast<float>(i + 1) * regionSize;
-            mGrainRegions[i].pitchShift = 0.0f;
             mGrainRegions[i].gain = 1.0f;
             mGrainRegions[i].active = true;
         }
@@ -616,6 +609,17 @@ public:
         return mVoiceRelease;
     }
 
+    // MARK: - MIDI Base Pitch Control
+
+    void setBasePitch(float pitch) {
+        // Base pitch in MIDI note number (0-127), default 60 = C4
+        mBasePitch = std::clamp(pitch, 0.0f, 127.0f);
+    }
+
+    float getBasePitch() const {
+        return mBasePitch;
+    }
+
     // MARK: - MIDI Note Control
 
     void noteOn(int noteNumber, float velocity) {
@@ -644,10 +648,10 @@ public:
             mVoices[voiceIndex].isActive = true;
             mVoices[voiceIndex].isInRelease = false;
 
-            // Calculate pitch from MIDI note (relative to A4 = note 69)
-            // A4 = 440Hz is our reference
-            int semitonesFromA4 = noteNumber - 69;
-            mVoices[voiceIndex].basePitchSemitones = static_cast<float>(semitonesFromA4);
+            // Calculate pitch from MIDI note (relative to user-defined base pitch)
+            // Pitch shift = MIDI note - base pitch (allows proper melodic playing)
+            float pitchShift = noteNumber - mBasePitch;
+            mVoices[voiceIndex].basePitchSemitones = pitchShift;
 
             // Trigger voice envelope
             mVoices[voiceIndex].envelope.trigger();
@@ -737,7 +741,6 @@ public:
             // Calculate startPosition/endPosition from manual values
             newRegion.startPosition = newRegion.manualPosition;
             newRegion.endPosition = newRegion.manualPosition + newRegion.manualWidth;
-            newRegion.pitchShift = 0.0f;
             newRegion.gain = 1.0f;
             newRegion.jitter = 0.0f;
             newRegion.playbackDirection = PlaybackDirection::forward;
@@ -848,8 +851,8 @@ public:
                 // Continue spawning grains even during release phase
                 for (auto& region : mGrainRegions) {
                     if (region.active) {
-                        // Update region playback position for UI display
-                        updateRegionPlaybackPosition(region);
+                        // Update region playback position for UI display with voice pitch
+                        updateRegionPlaybackPosition(region, mVoices[i]);
 
                         // Spawn grain for this region at current playback position
                         spawnGrainForPlayback(mVoices[i], region);
@@ -911,7 +914,7 @@ private:
     // Per-region LFOs for position/width modulation
     std::array<LFO, MAX_GRAIN_REGIONS> mRegionLFOs;
 
-    void updateRegionPlaybackPosition(GrainRegion& region) {
+    void updateRegionPlaybackPosition(GrainRegion& region, const Voice& voice) {
         int regionIndex = 0;
         for (size_t i = 0; i < mGrainRegions.size(); ++i) {
             if (&mGrainRegions[i] == &region) {
@@ -925,8 +928,11 @@ private:
         // Note: region.startPosition/endPosition are already updated by process() with LFO modulation
         float range = region.endPosition - region.startPosition;
 
-        // Update position based on direction with region's playback speed
-        float speed = region.playbackSpeed;
+        // Calculate voice pitch ratio for pitch shifting
+        float voicePitchRatio = std::pow(2.0f, voice.basePitchSemitones / 12.0f);
+
+        // Update position based on direction with region's playback speed and voice pitch
+        float speed = region.playbackSpeed * voicePitchRatio;
 
         bool looped = false;  // Track if we looped (for random mode)
 
@@ -1002,6 +1008,12 @@ private:
     }
 
     void spawnGrainForPlayback(Voice& voice, GrainRegion& region) {
+        // Skip continuous output generation if voice is in release phase
+        // This prevents "stuck notes" issue
+        if (voice.isInRelease && region.jitter == 0.0f) {
+            return;
+        }
+
         int regionIndex = 0;
         for (size_t i = 0; i < mGrainRegions.size(); ++i) {
             if (&mGrainRegions[i] == &region) {
@@ -1021,10 +1033,8 @@ private:
         // Normalize gain by active region count to prevent overload
         float normalizedGain = region.gain / std::sqrt(static_cast<float>(activeRegionCount));
 
-        // Apply voice pitch + region pitch
-        float basePitchRatio = region.getPitchRatio();
+        // Apply voice pitch (from MIDI note, relative to base pitch)
         float voicePitchRatio = std::pow(2.0f, voice.basePitchSemitones / 12.0f);
-        float modulatedPitchRatio = basePitchRatio * voicePitchRatio;
 
         if (region.jitter == 0.0f) {
             // CONTINUOUS PLAYBACK MODE (jitter=0)
@@ -1036,9 +1046,7 @@ private:
             // Get interpolated sample from audio buffer
             float sample = getInterpolatedSample(pos);
 
-            // For continuous mode with pitch shift, we need to read multiple samples
-            // and crossfade them to simulate pitch shifting
-            // For now, just apply gain and envelope (pitch affects grain-based playback more)
+            // Apply gain and envelope for continuous mode
             voice.continuousOutput += sample * normalizedGain;
         } else {
             // GRANULAR MODE (jitter>0)
@@ -1072,7 +1080,7 @@ private:
             float grainSize = 0.05f;  // Fixed 50ms grains
 
             Grain grain;
-            grain.init(startPos, grainSize, modulatedPitchRatio, mAudioBuffer);
+            grain.init(startPos, grainSize, voicePitchRatio, mAudioBuffer);
             grain.setGain(normalizedGain);
             grain.setVolumeScale(1.0f);  // Volume controlled by voice-level ADSR
 
@@ -1089,6 +1097,9 @@ private:
     float mVoiceDecay = 0.1f;
     float mVoiceSustain = 0.7f;
     float mVoiceRelease = 0.2f;
+
+    // MIDI base pitch (MIDI note number, default 60 = C4)
+    float mBasePitch = 60.0f;
 
     // Waveforms
     std::vector<WaveformData> mWaveforms;

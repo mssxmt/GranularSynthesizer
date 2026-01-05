@@ -344,6 +344,16 @@ public:
         return mGranularEngine.getEnvelopeRelease();
     }
 
+    // MARK: - MIDI Base Pitch Control
+
+    void setBasePitch(float pitch) {
+        mGranularEngine.setBasePitch(pitch);
+    }
+
+    float getBasePitch() const {
+        return mGranularEngine.getBasePitch();
+    }
+
     // MARK: - Waveform Management
 
     int getWaveformCount() const {

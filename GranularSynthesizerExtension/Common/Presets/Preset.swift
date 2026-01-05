@@ -12,7 +12,6 @@ import Foundation
 struct GrainRegionPreset: Codable {
     var startPosition: Float
     var endPosition: Float
-    var pitchShift: Float
     var gain: Float
     var active: Bool
     var jitter: Float
@@ -34,7 +33,6 @@ struct GrainRegionPreset: Codable {
         return GrainRegionPreset(
             startPosition: region.startPosition,
             endPosition: region.endPosition,
-            pitchShift: region.pitchShift,
             gain: region.gain,
             active: region.active,
             jitter: region.jitter,
@@ -54,7 +52,6 @@ struct GrainRegionPreset: Codable {
         let data = GrainRegionData(
             startPosition: startPosition,
             endPosition: endPosition,
-            pitchShift: pitchShift,
             gain: gain,
             active: active,
             jitter: jitter,
@@ -136,7 +133,7 @@ class PresetManager {
             name: "Init",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.0, endPosition: 0.25, pitchShift: 0.0, gain: 1.0, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.0, endPosition: 0.25, gain: 1.0, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
@@ -147,7 +144,7 @@ class PresetManager {
             name: "Sparse Texture",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, pitchShift: 0.0, gain: 0.7, active: true, jitter: 0.1, playbackDirection: 0, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, gain: 0.7, active: true, jitter: 0.1, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
@@ -158,7 +155,7 @@ class PresetManager {
             name: "Dense Cloud",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, pitchShift: 0.0, gain: 0.5, active: true, jitter: 0.2, playbackDirection: 0, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, gain: 0.5, active: true, jitter: 0.2, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
@@ -169,7 +166,7 @@ class PresetManager {
             name: "LFO Pulse",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.2, endPosition: 0.8, pitchShift: 0.0, gain: 0.8, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.2, endPosition: 0.8, gain: 0.8, active: true, jitter: 0.0, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.01,
             envelopeDecay: 0.1,
@@ -180,7 +177,7 @@ class PresetManager {
             name: "Slow Attack",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, pitchShift: 0.0, gain: 0.6, active: true, jitter: 0.05, playbackDirection: 0, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.0, endPosition: 0.5, gain: 0.6, active: true, jitter: 0.05, playbackDirection: 0, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.5,
             envelopeDecay: 0.3,
@@ -191,7 +188,7 @@ class PresetManager {
             name: "Chaotic Glitch",
             author: "Factory",
             grainRegions: [
-                GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, pitchShift: 0.0, gain: 0.5, active: true, jitter: 0.8, playbackDirection: 3, playbackSpeed: 0.0000227)
+                GrainRegionPreset(startPosition: 0.0, endPosition: 1.0, gain: 0.5, active: true, jitter: 0.8, playbackDirection: 3, playbackSpeed: 0.0000227)
             ],
             envelopeAttack: 0.001,
             envelopeDecay: 0.05,
