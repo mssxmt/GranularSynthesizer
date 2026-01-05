@@ -14,6 +14,8 @@
 		092EAEF62F07E83000DD4ABB /* Preset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF72F07E83000DD4ABB /* Preset.swift */; };
 		092EAEF82F07E85000DD4ABB /* WaveformManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */; };
 		092EAEFA2F07E86000DD4ABB /* TopControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092EAEFB2F07E86000DD4ABB /* TopControlBar.swift */; };
+		09552EEC2F0BD6A6005CC159 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 097656ED2F07BB4800A99514 /* Assets.xcassets */; };
+		09552EED2F0BE534005CC159 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 097656ED2F07BB4800A99514 /* Assets.xcassets */; };
 		097656D42F07BB4700A99514 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D32F07BB4700A99514 /* ContentView.swift */; };
 		097656D82F07BB4700A99514 /* ViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */; };
 		097656DB2F07BB4700A99514 /* Synth.aif in Resources */ = {isa = PBXBuildFile; fileRef = 097656DA2F07BB4700A99514 /* Synth.aif */; };
@@ -24,7 +26,6 @@
 		097656E82F07BB4700A99514 /* AudioUnitHostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656E72F07BB4700A99514 /* AudioUnitHostModel.swift */; };
 		097656EA2F07BB4700A99514 /* AudioUnitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656E92F07BB4700A99514 /* AudioUnitViewModel.swift */; };
 		097656EC2F07BB4700A99514 /* GranularSynthesizerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656EB2F07BB4700A99514 /* GranularSynthesizerApp.swift */; };
-		097656EE2F07BB4800A99514 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 097656ED2F07BB4800A99514 /* Assets.xcassets */; };
 		097656F12F07BB4800A99514 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 097656F02F07BB4800A99514 /* Preview Assets.xcassets */; };
 		097656FC2F07BB4800A99514 /* GranularSynthesizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097656FB2F07BB4800A99514 /* GranularSynthesizerTests.swift */; };
 		097657062F07BB4800A99514 /* GranularSynthesizerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097657052F07BB4800A99514 /* GranularSynthesizerUITests.swift */; };
@@ -85,14 +86,14 @@
 
 /* Begin PBXFileReference section */
 		092EAEC22F07E01000DD4ABB /* WaveformView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GranularEngine.hpp; sourceTree = "<group>"; };
+		092EAEC52F07E05C00DD4ABB /* Grain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grain.hpp; sourceTree = "<group>"; };
 		092EAEF12F07E80000DD4ABB /* LFOControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LFOControlsView.swift; sourceTree = "<group>"; };
 		092EAEF32F07E81000DD4ABB /* EnvelopeControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvelopeControlsView.swift; sourceTree = "<group>"; };
 		092EAEF52F07E82000DD4ABB /* PresetControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetControlsView.swift; sourceTree = "<group>"; };
 		092EAEF72F07E83000DD4ABB /* Preset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preset.swift; sourceTree = "<group>"; };
 		092EAEF92F07E85000DD4ABB /* WaveformManagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformManagerView.swift; sourceTree = "<group>"; };
 		092EAEFB2F07E86000DD4ABB /* TopControlBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopControlBar.swift; sourceTree = "<group>"; };
-		092EAEC42F07E05C00DD4ABB /* GranularEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GranularEngine.hpp; sourceTree = "<group>"; };
-		092EAEC52F07E05C00DD4ABB /* Grain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grain.hpp; sourceTree = "<group>"; };
 		097656D02F07BB4700A99514 /* GranularSynthesizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GranularSynthesizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		097656D32F07BB4700A99514 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		097656D72F07BB4700A99514 /* ViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerRepresentable.swift; sourceTree = "<group>"; };
@@ -165,6 +166,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		092EAEF82F07E84000DD4ABB /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+				092EAEF72F07E83000DD4ABB /* Preset.swift */,
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
 		097656C72F07BB4700A99514 = {
 			isa = PBXGroup;
 			children = (
@@ -339,14 +348,6 @@
 				097657232F07BB4800A99514 /* GranularSynthesizerExtensionAUProcessHelper.hpp */,
 			);
 			path = DSP;
-			sourceTree = "<group>";
-		};
-		092EAEF82F07E84000DD4ABB /* Presets */ = {
-			isa = PBXGroup;
-			children = (
-				092EAEF72F07E83000DD4ABB /* Preset.swift */,
-			);
-			path = Presets;
 			sourceTree = "<group>";
 		};
 		097657252F07BB4800A99514 /* Parameters */ = {
@@ -529,7 +530,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				097656EE2F07BB4800A99514 /* Assets.xcassets in Resources */,
+				09552EEC2F0BD6A6005CC159 /* Assets.xcassets in Resources */,
 				097656F12F07BB4800A99514 /* Preview Assets.xcassets in Resources */,
 				097656DB2F07BB4700A99514 /* Synth.aif in Resources */,
 			);
@@ -557,6 +558,7 @@
 				097657242F07BB4800A99514 /* GranularSynthesizerExtensionAUProcessHelper.hpp in Resources */,
 				0976572C2F07BB4800A99514 /* GranularSynthesizerExtensionDSPKernel.hpp in Resources */,
 				097657362F07BB4800A99514 /* Base in Resources */,
+				09552EED2F0BE534005CC159 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -836,6 +838,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GranularSynthesizer/Preview Content\"";
@@ -869,6 +872,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GranularSynthesizer/Preview Content\"";
