@@ -221,6 +221,10 @@ public:
         mGranularEngine.setRegionJitter(index, jitter);
     }
 
+    void setRegionGain(int index, float gain) {
+        mGranularEngine.setRegionGain(index, gain);
+    }
+
     void setRegionPlaybackSpeed(int index, float speed) {
         mGranularEngine.setRegionPlaybackSpeed(index, speed);
     }

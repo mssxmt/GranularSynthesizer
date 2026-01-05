@@ -718,6 +718,12 @@ public:
         }
     }
 
+    void setRegionGain(int index, float gain) {
+        if (index >= 0 && index < static_cast<int>(mGrainRegions.size())) {
+            mGrainRegions[index].gain = std::clamp(gain, 0.0f, 0.01f);
+        }
+    }
+
     void setRegionPlaybackSpeed(int index, float speed) {
         if (index >= 0 && index < static_cast<int>(mGrainRegions.size())) {
             // Range: 0.1x (0.00000227) to 10x (0.000227) speed

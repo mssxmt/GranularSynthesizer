@@ -1085,7 +1085,7 @@ struct GrainRegionControls: View {
                         RegionParameterSlider(
                             name: "Gain",
                             value: Binding(
-                                get: { region.gain * 100000 },  // DSP (0-0.01) → UI (0-100)
+                                get: { region.gain * 10000 },  // DSP (0-0.01) → UI (0-100)
                                 set: { updateGain($0) }
                             ),
                             range: 0...100,
@@ -1196,13 +1196,13 @@ struct GrainRegionControls: View {
     }
 
     private func updateGain(_ value: Float) {
-        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit,
-              let regionData = audioUnit.getGrainRegion(Int32(region.index)) else {
+        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit else {
             return
         }
-        regionData.gain = value * 0.0001  // UI (0-100) → DSP (0-0.01)
-        audioUnit.setGrainRegion(Int32(region.index), region: regionData)
-        onUpdate()
+        let actualGain = value * 0.0001  // UI (0-100) → DSP (0-0.01)
+        audioUnit.setRegionGain(Int32(region.index), gain: actualGain)
+        // Update local model without full reload
+        region.gain = actualGain
     }
 
     private func updateActiveState(_ value: Bool) {

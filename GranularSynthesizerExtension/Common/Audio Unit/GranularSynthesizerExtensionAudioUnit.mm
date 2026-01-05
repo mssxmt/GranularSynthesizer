@@ -266,6 +266,10 @@
     _kernel.setRegionJitter(index, jitter);
 }
 
+- (void)setRegionGain:(int)index gain:(float)gain {
+    _kernel.setRegionGain(index, gain);
+}
+
 - (void)setRegionPlaybackSpeed:(int)index speed:(float)speed {
     _kernel.setRegionPlaybackSpeed(index, speed);
 }

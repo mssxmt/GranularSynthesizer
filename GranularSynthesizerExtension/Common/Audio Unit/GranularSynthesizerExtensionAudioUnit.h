@@ -56,6 +56,7 @@
 - (void)setGrainRegion:(int)index region:(GrainRegionData *)region;
 - (void)setRegionPlaybackDirection:(int)index direction:(NSInteger)direction;
 - (void)setRegionJitter:(int)index jitter:(float)jitter;
+- (void)setRegionGain:(int)index gain:(float)gain;
 - (void)setRegionPlaybackSpeed:(int)index speed:(float)speed;
 - (float)getRegionPlaybackPosition:(int)index;
 - (float)getRegionPlaybackSpeed:(int)index;
