@@ -396,16 +396,6 @@ struct WaveformView: View {
                 .disabled(grainRegions.count <= 1 || selectedRegionIndex == nil)
             }
         }
-        .overlay(
-            // Hide AUv3 component info ("aumu GrnS Mxmt") displayed by host
-            VStack {
-                Rectangle()
-                    .fill(Color.black)
-                    .frame(height: 24)
-                Spacer()
-            }
-            .allowsHitTesting(false)
-        )
         .onAppear {
             loadGrainRegions()
             if selectedRegionIndex == nil && !grainRegions.isEmpty {
