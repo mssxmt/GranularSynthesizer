@@ -938,10 +938,17 @@ private:
         float voicePitchRatio = std::pow(2.0f, voice.basePitchSemitones / 12.0f);
 
         // Calculate playback speed
-        // Divide by sample rate to get correct playback time
-        // playbackSpeed = 1.0 means 1.0 of waveform per second at normal speed
-        // This is independent of region width - all regions progress at same rate
-        float speed = (region.playbackSpeed * voicePitchRatio) / static_cast<float>(mSampleRate);
+        // Correctly calculate increment per sample to maintain constant playback speed based on audio buffer size
+        // speed = increment per sample
+        float bufferSize = static_cast<float>(mAudioBuffer.size());
+        float regionSamples = range * bufferSize;
+        
+        // Avoid division by zero
+        if (regionSamples < 1.0f) regionSamples = 1.0f;
+        
+        // At 1x speed, we want to play 'regionSamples' number of samples in 'regionSamples' time steps
+        // So position (0.0-1.0) should increment by 1/regionSamples per sample
+        float speed = (region.playbackSpeed * voicePitchRatio) / regionSamples;
 
         bool looped = false;  // Track if we looped (for random mode)
 
