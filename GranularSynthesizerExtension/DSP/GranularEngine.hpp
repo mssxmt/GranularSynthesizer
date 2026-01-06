@@ -276,7 +276,7 @@ struct GrainRegion {
     float jitter = 0.0f;         // Grain/jitter amount (0.0 to 1.0) - adds randomness to playback position
     PlaybackDirection playbackDirection = PlaybackDirection::forward;
     float currentPosition = 0.0f; // Current playback position for UI display (0.0 to 1.0)
-    float playbackSpeed = 0.1f;      // Playback speed: 0.1 = 1x (normal speed)
+    float playbackSpeed = 1.0f;      // Playback speed: 1.0 = 1x (normal speed)
 
     // Per-region LFO settings (for position/width modulation)
     bool lfoEnabled = false;         // LFO enable/disable
@@ -304,8 +304,8 @@ struct GrainRegion {
         }
         if (jitter < 0.0f) jitter = 0.0f;
         if (jitter > 1.0f) jitter = 1.0f;
-        if (playbackSpeed < 0.01f) playbackSpeed = 0.01f;
-        if (playbackSpeed > 1.0f) playbackSpeed = 1.0f;
+        if (playbackSpeed < 0.1f) playbackSpeed = 0.1f;
+        if (playbackSpeed > 10.0f) playbackSpeed = 10.0f;
 
         // LFO parameters
         lfoFrequency = std::clamp(lfoFrequency, 0.1f, 20.0f);
@@ -726,8 +726,8 @@ public:
 
     void setRegionPlaybackSpeed(int index, float speed) {
         if (index >= 0 && index < static_cast<int>(mGrainRegions.size())) {
-            // Range: 0.1x (0.01) to 10x (1.0) speed
-            mGrainRegions[index].playbackSpeed = std::clamp(speed, 0.01f, 1.0f);
+            // Range: 0.1x to 10x speed
+            mGrainRegions[index].playbackSpeed = std::clamp(speed, 0.1f, 10.0f);
         }
     }
 
@@ -735,7 +735,7 @@ public:
         if (index >= 0 && index < static_cast<int>(mGrainRegions.size())) {
             return mGrainRegions[index].playbackSpeed;
         }
-        return 0.0000227f;  // Default 1x
+        return 1.0f;  // Default 1x
     }
 
     void addGrainRegion() {
@@ -750,7 +750,7 @@ public:
             newRegion.gain = 0.01f;
             newRegion.jitter = 0.0f;
             newRegion.playbackDirection = PlaybackDirection::forward;
-            newRegion.playbackSpeed = 0.0000227f;  // Default 1x speed
+            newRegion.playbackSpeed = 1.0f;  // Default 1x speed
             newRegion.active = true;
             // LFO defaults
             newRegion.lfoEnabled = false;
@@ -937,8 +937,11 @@ private:
         // Calculate voice pitch ratio for pitch shifting
         float voicePitchRatio = std::pow(2.0f, voice.basePitchSemitones / 12.0f);
 
-        // Update position based on direction with region's playback speed and voice pitch
-        float speed = region.playbackSpeed * voicePitchRatio;
+        // Calculate playback speed
+        // Divide by sample rate to get correct playback time
+        // playbackSpeed = 1.0 means 1.0 of waveform per second at normal speed
+        // This is independent of region width - all regions progress at same rate
+        float speed = (region.playbackSpeed * voicePitchRatio) / static_cast<float>(mSampleRate);
 
         bool looped = false;  // Track if we looped (for random mode)
 
