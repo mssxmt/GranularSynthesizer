@@ -237,6 +237,13 @@ struct TopControlBar: View {
             return
         }
 
+        // Don't allow deleting if only one waveform
+        guard waveforms.count > 1 else {
+            alertMessage = "Cannot delete the only waveform"
+            showingAlert = true
+            return
+        }
+
         // Delete the waveform
         let success = audioUnit.removeWaveform(Int32(index))
 
@@ -244,9 +251,9 @@ struct TopControlBar: View {
             // Reload waveform list
             loadWaveforms()
 
-            // Select the first available waveform
-            selectedWaveformIndex = max(0, selectedWaveformIndex - 1)
-            selectWaveform(selectedWaveformIndex)
+            // Switch to built-in waveform (index 0)
+            selectedWaveformIndex = 0
+            selectWaveform(0)
         } else {
             alertMessage = "Cannot delete waveform"
             showingAlert = true
@@ -566,35 +573,71 @@ struct CompactWaveformPicker: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Picker("", selection: $selectedWaveformIndex) {
-                ForEach(0..<waveforms.count, id: \.self) { index in
-                    Text(waveforms[index]).tag(index)
-                }
+            // Previous button
+            Button(action: {
+                let newIndex = max(0, selectedWaveformIndex - 1)
+                selectedWaveformIndex = newIndex
+                onSelect(newIndex)
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.caption)
+                    .frame(minWidth: 32, minHeight: 44)
             }
-            .pickerStyle(MenuPickerStyle())
-            .onChange(of: selectedWaveformIndex) { newValue in
-                onSelect(newValue)
+            .disabled(selectedWaveformIndex == 0)
+
+            // Current waveform name (tap to cycle)
+            Button(action: {
+                let newIndex = (selectedWaveformIndex + 1) % waveforms.count
+                selectedWaveformIndex = newIndex
+                onSelect(newIndex)
+            }) {
+                Text(displayName)
+                    .font(.caption2)
+                    .lineLimit(1)
+                    .frame(minWidth: 40, maxHeight: 44)
+                    .frame(maxWidth: 120)
             }
 
+            // Next button
+            Button(action: {
+                let newIndex = min(waveforms.count - 1, selectedWaveformIndex + 1)
+                selectedWaveformIndex = newIndex
+                onSelect(newIndex)
+            }) {
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .frame(minWidth: 32, minHeight: 44)
+            }
+            .disabled(selectedWaveformIndex >= waveforms.count - 1)
+
+            // Import button
             Button(action: onImport) {
                 Image(systemName: "plus")
                     .font(.caption)
-                    .frame(minWidth: 44, minHeight: 44)  // Larger touch target
+                    .frame(minWidth: 44, minHeight: 44)
             }
 
+            // Delete button (always accessible)
             Button(action: { onDelete(selectedWaveformIndex) }) {
                 Image(systemName: "trash")
                     .font(.caption)
-                    .frame(minWidth: 44, minHeight: 44)  // Larger touch target
+                    .frame(minWidth: 44, minHeight: 44)
             }
             .disabled(canDeleteCurrentWaveform == false)
         }
     }
 
+    private var displayName: String {
+        guard selectedWaveformIndex >= 0 && selectedWaveformIndex < waveforms.count else {
+            return "None"
+        }
+        return waveforms[selectedWaveformIndex]
+    }
+
     private var canDeleteCurrentWaveform: Bool {
         // Don't allow deleting built-in waveform (index 0)
         // and ensure there are multiple waveforms
-        return selectedWaveformIndex != 0 && waveforms.count > 1
+        return waveforms.count > 1 && selectedWaveformIndex != 0
     }
 }
 
