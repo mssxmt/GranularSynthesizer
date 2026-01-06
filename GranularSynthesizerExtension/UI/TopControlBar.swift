@@ -75,7 +75,9 @@ struct TopControlBar: View {
                     waveforms: waveforms,
                     selectedWaveformIndex: $selectedWaveformIndex,
                     onSelect: { selectWaveform($0) },
-                    onImport: { showingFilePicker = true }
+                    onImport: { showingFilePicker = true },
+                    onDelete: { deleteWaveform($0) },
+                    audioUnit: audioUnit
                 )
                 .frame(maxWidth: .infinity)
 
@@ -221,6 +223,34 @@ struct TopControlBar: View {
         audioUnit.setCurrentWaveform(Int32(index))
         selectedWaveformIndex = index
         NotificationCenter.default.post(name: NSNotification.Name("WaveformChanged"), object: nil)
+    }
+
+    private func deleteWaveform(_ index: Int) {
+        guard let audioUnit = audioUnit as? GranularSynthesizerExtensionAudioUnit else {
+            return
+        }
+
+        // Don't allow deleting built-in waveform (index 0)
+        guard index != 0 else {
+            alertMessage = "Cannot delete built-in waveform"
+            showingAlert = true
+            return
+        }
+
+        // Delete the waveform
+        let success = audioUnit.removeWaveform(Int32(index))
+
+        if success {
+            // Reload waveform list
+            loadWaveforms()
+
+            // Select the first available waveform
+            selectedWaveformIndex = max(0, selectedWaveformIndex - 1)
+            selectWaveform(selectedWaveformIndex)
+        } else {
+            alertMessage = "Cannot delete waveform"
+            showingAlert = true
+        }
     }
 
     private func handleFileSelection(_ result: Result<[URL], Error>) {
@@ -531,6 +561,8 @@ struct CompactWaveformPicker: View {
     @Binding var selectedWaveformIndex: Int
     var onSelect: (Int) -> Void
     var onImport: () -> Void
+    var onDelete: (Int) -> Void
+    var audioUnit: AUAudioUnit?
 
     var body: some View {
         HStack(spacing: 4) {
@@ -547,8 +579,22 @@ struct CompactWaveformPicker: View {
             Button(action: onImport) {
                 Image(systemName: "plus")
                     .font(.caption)
+                    .frame(minWidth: 44, minHeight: 44)  // Larger touch target
             }
+
+            Button(action: { onDelete(selectedWaveformIndex) }) {
+                Image(systemName: "trash")
+                    .font(.caption)
+                    .frame(minWidth: 44, minHeight: 44)  // Larger touch target
+            }
+            .disabled(canDeleteCurrentWaveform == false)
         }
+    }
+
+    private var canDeleteCurrentWaveform: Bool {
+        // Don't allow deleting built-in waveform (index 0)
+        // and ensure there are multiple waveforms
+        return selectedWaveformIndex != 0 && waveforms.count > 1
     }
 }
 
@@ -565,27 +611,17 @@ struct CompactBasePitchControl: View {
     }
 
     var body: some View {
-        HStack(spacing: 4) {
-            Button(action: {
-                let newPitch = max(0, basePitch - 1)
-                onChange(Float(newPitch))
-            }) {
-                Image(systemName: "minus")
-                    .font(.caption)
-            }
-
-            Text(noteName)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-                .frame(minWidth: 20)
-
-            Button(action: {
-                let newPitch = min(127, basePitch + 1)
-                onChange(Float(newPitch))
-            }) {
-                Image(systemName: "plus")
-                    .font(.caption)
+        Picker("", selection: Binding(
+            get: { Int(basePitch) },
+            set: { onChange(Float($0)) }
+        )) {
+            ForEach(0..<128) { note in
+                let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+                let noteIndex = note % 12
+                let octave = note / 12 - 1
+                Text("\(noteNames[noteIndex])\(octave)").tag(note)
             }
         }
+        .pickerStyle(MenuPickerStyle())
     }
 }
