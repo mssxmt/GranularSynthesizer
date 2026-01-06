@@ -752,7 +752,7 @@ public:
             // Calculate startPosition/endPosition from manual values
             newRegion.startPosition = newRegion.manualPosition;
             newRegion.endPosition = newRegion.manualPosition + newRegion.manualWidth;
-            newRegion.gain = 0.01f;
+            newRegion.gain = 0.0f;
             newRegion.jitter = 0.0f;
             newRegion.playbackDirection = PlaybackDirection::forward;
             newRegion.playbackSpeed = 1.0f;  // Default 1x speed
