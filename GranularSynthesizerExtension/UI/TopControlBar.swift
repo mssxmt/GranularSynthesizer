@@ -571,59 +571,38 @@ struct CompactWaveformPicker: View {
     var onDelete: (Int) -> Void
     var audioUnit: AUAudioUnit?
 
+    @State private var showList = false
+
     var body: some View {
         HStack(spacing: 4) {
-            // Previous button
-            Button(action: {
-                let newIndex = max(0, selectedWaveformIndex - 1)
-                selectedWaveformIndex = newIndex
-                onSelect(newIndex)
-            }) {
-                Image(systemName: "chevron.left")
-                    .font(.caption)
-                    .frame(minWidth: 32, minHeight: 44)
+            // Current waveform button (shows list when tapped)
+            Button(action: { showList = true }) {
+                HStack(spacing: 2) {
+                    Text(displayName)
+                        .font(.caption2)
+                        .lineLimit(1)
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                }
+                .frame(minWidth: 60, maxHeight: 44)
             }
-            .disabled(selectedWaveformIndex == 0)
-
-            // Current waveform name (tap to cycle)
-            Button(action: {
-                let newIndex = (selectedWaveformIndex + 1) % waveforms.count
-                selectedWaveformIndex = newIndex
-                onSelect(newIndex)
-            }) {
-                Text(displayName)
-                    .font(.caption2)
-                    .lineLimit(1)
-                    .frame(minWidth: 40, maxHeight: 44)
-                    .frame(maxWidth: 120)
+            .sheet(isPresented: $showList) {
+                WaveformListSheet(
+                    waveforms: waveforms,
+                    selectedWaveformIndex: $selectedWaveformIndex,
+                    onSelect: { index in
+                        onSelect(index)
+                        showList = false
+                    },
+                    onDelete: onDelete
+                )
             }
 
-            // Next button
-            Button(action: {
-                let newIndex = min(waveforms.count - 1, selectedWaveformIndex + 1)
-                selectedWaveformIndex = newIndex
-                onSelect(newIndex)
-            }) {
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .frame(minWidth: 32, minHeight: 44)
-            }
-            .disabled(selectedWaveformIndex >= waveforms.count - 1)
-
-            // Import button
             Button(action: onImport) {
                 Image(systemName: "plus")
                     .font(.caption)
                     .frame(minWidth: 44, minHeight: 44)
             }
-
-            // Delete button (always accessible)
-            Button(action: { onDelete(selectedWaveformIndex) }) {
-                Image(systemName: "trash")
-                    .font(.caption)
-                    .frame(minWidth: 44, minHeight: 44)
-            }
-            .disabled(canDeleteCurrentWaveform == false)
         }
     }
 
@@ -633,11 +612,51 @@ struct CompactWaveformPicker: View {
         }
         return waveforms[selectedWaveformIndex]
     }
+}
 
-    private var canDeleteCurrentWaveform: Bool {
-        // Don't allow deleting built-in waveform (index 0)
-        // and ensure there are multiple waveforms
-        return waveforms.count > 1 && selectedWaveformIndex != 0
+// MARK: - Waveform List Sheet
+struct WaveformListSheet: View {
+    var waveforms: [String]
+    @Binding var selectedWaveformIndex: Int
+    var onSelect: (Int) -> Void
+    var onDelete: (Int) -> Void
+
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(0..<waveforms.count, id: \.self) { index in
+                    Button(action: { onSelect(index) }) {
+                        HStack {
+                            Text(waveforms[index])
+                                .font(.body)
+                                .foregroundColor(.primary)
+                            if index == selectedWaveformIndex {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.accentColor)
+                            }
+                            if index == 0 {
+                                Spacer()
+                                Text("(Built-in)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        if index != 0 && index != selectedWaveformIndex && waveforms.count > 1 {
+                            Button(role: .destructive) {
+                                onDelete(index)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Waveforms")
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 }
 

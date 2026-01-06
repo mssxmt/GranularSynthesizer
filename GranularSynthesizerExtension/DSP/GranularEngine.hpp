@@ -428,6 +428,11 @@ public:
             return false;
         }
 
+        // Don't allow removing built-in waveform (index 0)
+        if (index == 0) {
+            return false;
+        }
+
         // Don't allow removing if it's the current waveform
         if (index == mCurrentWaveformIndex) {
             return false;
