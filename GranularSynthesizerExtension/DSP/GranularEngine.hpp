@@ -1067,11 +1067,16 @@ private:
             // GRANULAR MODE (jitter>0)
             // Spawn discrete grains with position jitter
 
+            // Dynamic spawn rate based on jitter for smooth transition
+            // jitter=0 → very slow spawn (32000 samples = 720ms) for smooth texture
+            // jitter=1 → fast spawn (500 samples = 11ms) for granular effect
+            int baseSpawnRate = 32000 - static_cast<int>(region.jitter * 31500);
+            baseSpawnRate = std::clamp(baseSpawnRate, 500, 32000);
+
             // Adjust spawn rate based on active region count to prevent overload
             // More regions = slower spawn rate per region
-            int baseSpawnRate = 1000;  // Base: every 1000 samples
-            int adjustedSpawnRate = baseSpawnRate * activeRegionCount;  // Scale with region count
-            adjustedSpawnRate = std::clamp(adjustedSpawnRate, 1000, 8000);  // Limit range
+            int adjustedSpawnRate = baseSpawnRate * activeRegionCount;
+            adjustedSpawnRate = std::clamp(adjustedSpawnRate, 500, 64000);
 
             state.samplesUntilNextGrain--;
             if (state.samplesUntilNextGrain > 0) {
@@ -1092,7 +1097,10 @@ private:
             int startPos = static_cast<int>(pos * mAudioBuffer.size());
 
             // Grain parameters
-            float grainSize = 0.05f;  // Fixed 50ms grains
+            // Dynamic grain size based on jitter for smooth transition
+            // jitter=0 → 500ms (continuous-like), jitter=1 → 20ms (very granular)
+            float grainSize = 0.5f - (region.jitter * 0.48f);
+            grainSize = std::clamp(grainSize, 0.02f, 0.5f);
 
             Grain grain;
             grain.init(startPos, grainSize, voicePitchRatio, mAudioBuffer);
