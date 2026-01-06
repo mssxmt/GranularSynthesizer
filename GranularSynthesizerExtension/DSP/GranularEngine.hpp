@@ -837,11 +837,17 @@ public:
                 // Reset continuous output for this sample
                 mVoices[i].continuousOutput = 0.0f;
 
-                // Update envelope parameters (in case they changed)
-                mVoices[i].envelope.setAttack(mVoiceAttack);
-                mVoices[i].envelope.setDecay(mVoiceDecay);
-                mVoices[i].envelope.setSustain(mVoiceSustain);
-                mVoices[i].envelope.setRelease(mVoiceRelease);
+                // Update envelope parameters only when voice is first activated
+                // (avoid redundant parameter updates every sample)
+                if (mVoices[i].envelope.getAttack() != mVoiceAttack ||
+                    mVoices[i].envelope.getDecay() != mVoiceDecay ||
+                    mVoices[i].envelope.getSustain() != mVoiceSustain ||
+                    mVoices[i].envelope.getRelease() != mVoiceRelease) {
+                    mVoices[i].envelope.setAttack(mVoiceAttack);
+                    mVoices[i].envelope.setDecay(mVoiceDecay);
+                    mVoices[i].envelope.setSustain(mVoiceSustain);
+                    mVoices[i].envelope.setRelease(mVoiceRelease);
+                }
 
                 // Process voice envelope to get master volume level
                 float masterEnvLevel = mVoices[i].envelope.process();
@@ -880,6 +886,14 @@ public:
                     } else {
                         it = mVoices[i].grains.erase(it);
                     }
+                }
+
+                // Limit grain count per voice to prevent CPU overload
+                constexpr int MAX_GRAINS_PER_VOICE = 16;
+                if (mVoices[i].grains.size() > MAX_GRAINS_PER_VOICE) {
+                    // Remove oldest grains (at the beginning)
+                    int removeCount = mVoices[i].grains.size() - MAX_GRAINS_PER_VOICE;
+                    mVoices[i].grains.erase(mVoices[i].grains.begin(), mVoices[i].grains.begin() + removeCount);
                 }
 
                 // Add continuous output (from jitter=0 regions) with envelope applied

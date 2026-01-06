@@ -69,7 +69,8 @@ struct WaveformView: View {
     @State private var timer: Timer?
 
     var body: some View {
-        VStack(spacing: 12) {
+        ScrollView {
+            VStack(spacing: 12) {
             // Waveform display (visual only)
             GeometryReader { geometry in
                 ZStack {
@@ -396,6 +397,7 @@ struct WaveformView: View {
                 .disabled(grainRegions.count <= 1 || selectedRegionIndex == nil)
             }
         }
+        }
         .onAppear {
             loadGrainRegions()
             if selectedRegionIndex == nil && !grainRegions.isEmpty {
@@ -409,7 +411,7 @@ struct WaveformView: View {
     }
 
     private func startPlaybackAnimation() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 15.0, repeats: true) { _ in
             updatePlaybackPositions()
         }
     }
