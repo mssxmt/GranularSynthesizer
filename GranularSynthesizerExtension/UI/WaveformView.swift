@@ -408,6 +408,9 @@ struct WaveformView: View {
         .onDisappear {
             stopPlaybackAnimation()
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("WaveformChanged"))) { _ in
+            loadWaveform()
+        }
     }
 
     private func startPlaybackAnimation() {
